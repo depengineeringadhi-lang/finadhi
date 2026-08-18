@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  body{margin:0;font-family:'Poppins',system-ui,sans-serif;background:#f2f2f2}
+  a{color:#b02427}
+  a:hover{color:#e63946}
+  .mono{font-family:'JetBrains Mono',monospace}
+  @keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(158,22,22,0.45)}70%{box-shadow:0 0 0 10px rgba(158,22,22,0)}100%{box-shadow:0 0 0 0 rgba(158,22,22,0)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes softPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  @keyframes popIn{from{opacity:0;transform:scale(.82) translateY(-10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  @media (max-width: 1100px){
+    .rjpp-shell{display:flex !important;flex-direction:column !important;padding:20px !important}
+    .rjpp-content{order:1 !important}
+    .rjpp-dock{position:static !important;order:2 !important;left:auto !important;right:auto !important;top:auto !important;transform:none !important;flex-direction:row !important;width:fit-content !important;margin:20px auto 0 auto !important;padding:10px 18px !important}
+    .rjpp-two-col{grid-template-columns:1fr !important}
+    .rjpp-cards-grid{grid-template-columns:1fr !important}
+    .rjpp-three-col{grid-template-columns:1fr !important}
+    .rjpp-kpi-scroll{overflow-x:auto !important}
+    .rjpp-kpi-row{min-width:640px !important}
+    .rjpp-upload-row{min-width:980px !important}
+  }
+  @media (max-width: 640px){
+    .rjpp-topbar-title{font-size:13px !important}
+    .rjpp-topbar-sub{display:none !important}
+  }
+</style>
+</helmet>
+
+<div class="rjpp-shell" style="min-height:100vh;background:#f2f2f2;color:#161616;padding:28px 32px 28px 100px;box-sizing:border-box;position:relative">
+
+  <!-- Floating glass dock -->
+  <div class="rjpp-dock" style="position:fixed;left:22px;top:50%;transform:translateY(-50%);width:64px;background:rgba(255,255,255,0.72);backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,0.5);border-radius:32px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 0;box-shadow:0 20px 44px rgba(0,0,0,0.16);z-index:40">
+    <sc-for list="{{ railIcons }}" as="ic" hint-placeholder-count="5">
+      <div style="position:relative">
+        <div onClick="{{ ic.onClick }}" onMouseEnter="{{ ic.onEnter }}" onMouseLeave="{{ ic.onLeave }}" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:{{ ic.bg }};color:{{ ic.color }};cursor:pointer;transition:transform .25s ease,background .25s ease;animation:{{ ic.pulse }}" style-hover="transform:scale(1.1);background:{{ ic.hoverBg }}">{{ ic.glyph }}</div>
+        <sc-if value="{{ ic.showFlyout }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;left:56px;top:50%;transform:translateY(-50%);background:#fff;border-radius:16px;box-shadow:0 12px 28px rgba(0,0,0,0.14);padding:20px 24px;min-width:170px;z-index:50;animation:fadeUp .18s ease" onMouseEnter="{{ ic.onEnter }}" onMouseLeave="{{ ic.onLeave }}">
+            <div style="font-size:11px;font-weight:700;color:#bcbcbc;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:16px">{{ ic.flyoutTitle }}</div>
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <sc-for list="{{ ic.flyoutItems }}" as="fi" hint-placeholder-count="4">
+                <div style="font-size:14px;font-weight:600;color:#161616;cursor:pointer">{{ fi }}</div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+
+  <div class="rjpp-content" style="display:flex;flex-direction:column;gap:20px;max-width:1440px;margin:0 auto">
+
+    <!-- Floating glass top bar -->
+    <div style="background:rgba(255,255,255,0.78);backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,0.6);border-radius:20px;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 12px 34px rgba(0,0,0,0.1);position:sticky;top:12px;z-index:30">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:40px;height:40px;border-radius:10px;background:#000000;display:flex;align-items:center;justify-content:center">
+          <div style="width:18px;height:18px;background:#e63946;border-radius:3px"></div>
+        </div>
+        <div style="min-width:0">
+          <div class="rjpp-topbar-title" style="font-size:16px;font-weight:800;color:#0a0a0a;letter-spacing:0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">FINA — FINANCIAL MODELLING ADHI KARYA</div>
+          <div class="rjpp-topbar-sub" style="font-size:12px;color:#9a9a9a;margin-top:1px">{{ pageSubtitle }}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+
+        <div style="position:relative">
+          <div onClick="{{ toggleNotif }}" style="width:38px;height:38px;border-radius:50%;background:#fbeeec;display:flex;align-items:center;justify-content:center;color:#b02427;font-size:16px;cursor:pointer;transition:transform .2s ease" style-hover="transform:scale(1.08)">🔔&#65038;</div>
+          <sc-if value="{{ showNotif }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ toggleNotif }}" style="position:fixed;inset:0;z-index:55"></div>
+            <div style="position:absolute;top:50px;right:0;width:310px;background:#fff;border-radius:18px;box-shadow:0 24px 48px rgba(0,0,0,0.18);padding:18px;z-index:60;animation:popIn .22s cubic-bezier(.34,1.56,.64,1);transform-origin:top right">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                <div style="font-size:14px;font-weight:800;color:#161616">Notifikasi</div>
+                <div style="font-size:11px;font-weight:700;color:#b02427;cursor:pointer">Tandai dibaca</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <sc-for list="{{ notifications }}" as="n" hint-placeholder-count="3">
+                  <div style="padding:12px;border-radius:12px;background:#f7f7f7">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                      <div style="font-size:13px;font-weight:700;color:#161616">{{ n.title }}</div>
+                      <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:{{ n.tagBg }};color:{{ n.tagColor }}">{{ n.tag }}</span>
+                    </div>
+                    <div style="font-size:12px;color:#8a8a8a">{{ n.desc }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+        <div style="position:relative">
+          <div onClick="{{ toggleProfile }}" style="width:38px;height:38px;border-radius:50%;background:#e63946;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;cursor:pointer;transition:transform .2s ease" style-hover="transform:scale(1.08)">A</div>
+          <sc-if value="{{ showProfile }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ toggleProfile }}" style="position:fixed;inset:0;z-index:55"></div>
+            <div style="position:absolute;top:50px;right:0;width:260px;background:#fff;border-radius:18px;box-shadow:0 24px 48px rgba(0,0,0,0.18);overflow:hidden;z-index:60;animation:popIn .22s cubic-bezier(.34,1.56,.64,1);transform-origin:top right">
+              <div style="height:64px;background:linear-gradient(135deg, #d98588, #a94547)"></div>
+              <div style="padding:0 20px 20px;margin-top:-32px">
+                <div style="width:64px;height:64px;border-radius:50%;background:#e63946;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;border:4px solid #fff">A</div>
+                <div style="margin-top:10px">
+                  <div style="font-size:15px;font-weight:800;color:#161616">Ahmad Fauzi</div>
+                  <div style="font-size:12px;color:#8a8a8a;margin-top:2px">Manajer Keuangan Korporat</div>
+                  <div style="display:inline-block;margin-top:8px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:#f2f2f2;color:#5a5a5a">Level: Admin</div>
+                </div>
+                <div style="margin-top:16px;padding:12px;border-radius:12px;background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;text-align:center;font-size:13px;font-weight:700;cursor:pointer;transition:filter .2s ease" style-hover="filter:brightness(1.08)">Log Out</div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- HOME PAGE -->
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:20px;animation:fadeUp .3s ease">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;flex-wrap:wrap;gap:12px">
+          <div>
+            <div style="font-size:24px;font-weight:800;color:#0a0a0a">Dashboard</div>
+            <div style="font-size:13px;color:#8a8a8a;margin-top:2px">Ringkasan RJPP &amp; tindakan yang perlu ditindaklanjuti</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#7a7a7a">
+            Periode:
+            <select style="border:1px solid #e2e2e2;background:#fff;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;color:#161616">
+              <option>Agustus 2026</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="rjpp-cards-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+          <sc-for list="{{ statusCards }}" as="card" hint-placeholder-count="3">
+            <div style="background:{{ card.bg }};border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden;box-shadow:0 8px 20px {{ card.shadow }};transition:transform .25s ease,box-shadow .25s ease" style-hover="transform:translateY(-4px)">
+              <div style="position:absolute;right:-50px;bottom:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.22);filter:blur(10px)"></div>
+              <div style="position:absolute;right:10px;bottom:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.18);filter:blur(6px)"></div>
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1">
+                <div style="display:inline-flex;align-items:center;padding:7px 15px;border-radius:20px;background:rgba(255,255,255,0.3);color:#fff;font-size:13px;font-weight:700;width:fit-content">{{ card.label }}</div>
+                <div style="width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,0.28);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;flex:none;animation:{{ card.iconAnim }}">{{ card.icon }}</div>
+              </div>
+              <div style="position:relative;z-index:1">
+                <div style="font-size:42px;font-weight:800;color:#fff">{{ card.value }}</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:4px">{{ card.period }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div class="rjpp-two-col" style="display:grid;grid-template-columns:2.4fr 1fr;gap:18px;align-items:stretch">
+          <div style="background:#fff;border-radius:16px;padding:24px 28px;box-shadow:0 4px 16px rgba(0,0,0,0.05);display:flex;flex-direction:column">
+            <div style="font-size:15px;font-weight:700;color:#0a0a0a">Trend Sales &ndash; Breakdown Eliminir</div>
+            <div style="font-size:12px;color:#9a9a9a;margin-top:2px;margin-bottom:24px">Realisasi 2017 sd. 2025 &middot; per Agustus 2026</div>
+            <div style="position:relative;flex:1;display:flex;align-items:flex-end;gap:12px;min-height:200px">
+              <div style="position:absolute;left:{{ peakLeftPct }};top:0;transform:translateX(-50%);background:#161616;color:#fff;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;white-space:nowrap">Puncak &middot; {{ peakLabel }}</div>
+              <sc-for list="{{ trendBars }}" as="b" hint-placeholder-count="9">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;gap:8px">
+                  <div style="width:64%;height:{{ b.h }};background:{{ b.color }};border-radius:8px 8px 0 0;transition:opacity .2s ease" style-hover="opacity:0.75"></div>
+                  <div style="font-size:11px;color:#9a9a9a">{{ b.year }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:18px">
+            <div style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);display:flex;flex-direction:column;gap:12px">
+              <div style="font-size:13px;font-weight:700;color:#0a0a0a">Unit Kerja belum upload</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ pendingUnits }}" as="u" hint-placeholder-count="2">
+                  <div style="display:flex;align-items:center;gap:9px">
+                    <div style="width:8px;height:8px;border-radius:50%;background:#e63946;flex:none"></div>
+                    <div style="font-size:13px;font-weight:600;color:#161616">{{ u }}</div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="font-size:12px;color:#9a9a9a">3 Unit Kerja sudah upload</div>
+              <div style="text-align:center;padding:10px 14px;border-radius:10px;background:#f2f2f2;color:#b02427;font-size:12px;font-weight:700;cursor:pointer;transition:background .25s ease,color .25s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff">Ingatkan Unit Kerja</div>
+            </div>
+
+            <div style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);flex:1">
+              <div style="font-size:13px;font-weight:700;color:#0a0a0a;margin-bottom:14px">Data Terbaru</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <sc-for list="{{ recentUploads }}" as="u" hint-placeholder-count="5">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div style="font-size:13px;font-weight:600;color:#161616">{{ u.name }}</div>
+                    <div style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#1f7a4c;background:#e3f5ea;padding:4px 10px;border-radius:6px"><span>&#10003;</span>{{ u.status }}</div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="font-size:12px;font-weight:600;color:#b02427;margin-top:14px;cursor:pointer">Lihat semua &rarr;</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#fff;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);padding:24px 24px 16px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px">
+            <div>
+              <div style="font-size:15px;font-weight:700;color:#0a0a0a">KPI Konsolidasi (Dalam Juta Rupiah)</div>
+              <div style="font-size:12px;color:#9a9a9a;margin-top:2px">Data Approve per Agustus 2026 · RJPP 2026 sd. 2030</div>
+            </div>
+            <div style="font-size:13px;font-weight:600;color:#b02427;cursor:pointer;white-space:nowrap">Lihat detail →</div>
+          </div>
+          <div class="rjpp-kpi-scroll" style="overflow-x:auto">
+            <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.6fr repeat(5,1fr) 0.4fr;background:linear-gradient(135deg, #f0d3d1, #e9bcb5);border-radius:999px;padding:14px 20px;font-size:12px;font-weight:700;color:#8a2224">
+              <div>KPI</div>
+              <sc-for list="{{ kpiYears }}" as="y" hint-placeholder-count="5">
+                <div style="text-align:right">{{ y }}</div>
+              </sc-for>
+              <div></div>
+            </div>
+            <sc-for list="{{ kpiRows }}" as="row" hint-placeholder-count="6">
+              <div onClick="{{ row.onClick }}" class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.6fr repeat(5,1fr) 0.4fr;padding:16px 20px;border-radius:14px;background:{{ row.bg }};box-shadow:{{ row.shadow }};font-size:13px;align-items:center;cursor:pointer;transition:background .15s ease,box-shadow .15s ease" style-hover="background:#f5f5f5">
+                <div style="font-weight:600;color:#161616">{{ row.label }}</div>
+                <sc-for list="{{ row.values }}" as="v" hint-placeholder-count="5">
+                  <div class="mono" style="text-align:right;color:#5a5a5a">{{ v }}</div>
+                </sc-for>
+                <div style="text-align:right;color:#9a9a9a;letter-spacing:2px">&#8230;</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- UPLOAD PAGE -->
+    <sc-if value="{{ isUpload }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border-radius:16px;padding:26px 28px;box-shadow:0 4px 16px rgba(0,0,0,0.05);animation:fadeUp .3s ease">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px">
+          <div>
+            <div style="font-size:19px;font-weight:800;color:#0a0a0a">Data Spread Sheet &amp; History Upload</div>
+            <div style="font-size:13px;color:#8a8a8a;margin-top:4px">Upload aktif (pending, approved, rejected) — arsip ada di tab Data History Upload</div>
+          </div>
+          <div style="position:relative">
+            <div onClick="{{ toggleFilter }}" style="display:flex;align-items:center;gap:8px;border:1px solid #e2e2e2;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;color:#5a5a5a;cursor:pointer;transition:background .2s ease" style-hover="background:#f7f7f7">▼ Filter</div>
+            <sc-if value="{{ showFilter }}" hint-placeholder-val="{{ false }}">
+              <div onClick="{{ toggleFilter }}" style="position:fixed;inset:0;z-index:55"></div>
+              <div style="position:absolute;top:48px;right:0;width:280px;background:#fff;border-radius:16px;box-shadow:0 24px 48px rgba(0,0,0,0.18);padding:20px;z-index:60;animation:popIn .2s cubic-bezier(.34,1.56,.64,1);transform-origin:top right;text-align:left">
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <div>
+                    <div style="font-size:11px;font-weight:700;color:#8a8a8a;margin-bottom:6px">Unit Kerja</div>
+                    <select style="width:100%;border:1px solid #e2e2e2;border-radius:8px;padding:9px 12px;font-size:13px;color:#161616;box-sizing:border-box"><option>Semua Unit Kerja</option></select>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;font-weight:700;color:#8a8a8a;margin-bottom:6px">Periode</div>
+                    <select style="width:100%;border:1px solid #e2e2e2;border-radius:8px;padding:9px 12px;font-size:13px;color:#161616;box-sizing:border-box"><option>Agustus 2026</option></select>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;font-weight:700;color:#8a8a8a;margin-bottom:6px">Status</div>
+                    <select style="width:100%;border:1px solid #e2e2e2;border-radius:8px;padding:9px 12px;font-size:13px;color:#161616;box-sizing:border-box"><option>Semua Status</option></select>
+                  </div>
+                  <div onClick="{{ toggleFilter }}" style="text-align:center;padding:11px;border-radius:10px;background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:filter .2s ease" style-hover="filter:brightness(1.08)">Terapkan</div>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-bottom:20px">
+          <div onClick="{{ setTabSpreadSheet }}" style="padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:{{ tabSpreadBg }};color:{{ tabSpreadColor }};transition:background .2s ease">Data Spread Sheet</div>
+          <div onClick="{{ setTabHistory }}" style="padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:{{ tabHistoryBg }};color:{{ tabHistoryColor }};transition:background .2s ease">Data History Upload</div>
+        </div>
+
+        <div class="rjpp-kpi-scroll" style="overflow-x:auto">
+          <div class="rjpp-kpi-row rjpp-upload-row" style="display:grid;grid-template-columns:1.1fr 0.9fr 2.2fr 0.9fr 1.2fr 1.2fr 1fr 0.8fr;background:linear-gradient(135deg, #f0d3d1, #e9bcb5);border-radius:999px;padding:14px 20px;font-size:11px;font-weight:700;color:#8a2224;text-transform:uppercase;letter-spacing:0.03em">
+            <div>Unit Kerja</div><div>Periode</div><div>Nama File</div><div style="text-align:right">Baris Data</div><div>Drafter</div><div>Timestamp</div><div>Status</div><div></div>
+          </div>
+
+          <sc-for list="{{ uploadRows }}" as="r" hint-placeholder-count="9">
+            <div onClick="{{ r.onClick }}" class="rjpp-kpi-row rjpp-upload-row" style="display:grid;grid-template-columns:1.1fr 0.9fr 2.2fr 0.9fr 1.2fr 1.2fr 1fr 0.8fr;padding:16px 20px;border-radius:14px;background:{{ r.bg }};box-shadow:{{ r.shadow }};font-size:13px;align-items:center;cursor:pointer;transition:background .15s ease,box-shadow .15s ease" style-hover="background:#f5f5f5">
+              <div style="display:flex;align-items:center;gap:7px;font-weight:700;color:#161616"><div style="width:7px;height:7px;border-radius:50%;background:#2e9e5b"></div>{{ r.unit }}</div>
+              <div style="color:#5a5a5a">{{ r.periode }}</div>
+              <div style="color:#5a5a5a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:12px">{{ r.file }}</div>
+              <div class="mono" style="text-align:right;color:#4a4a4a">{{ r.baris }}</div>
+              <div style="color:#5a5a5a">{{ r.drafter }}</div>
+              <div class="mono" style="color:#9a9a9a;font-size:12px">{{ r.timestamp }}</div>
+              <div><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;background:#e3f5ea;color:#1f7a4c">&#10003; {{ r.status }}</span></div>
+              <div onClick="{{ r.onOpenDetail }}" style="display:flex;align-items:center;gap:5px;border:1px solid #f0c9c8;color:#b02427;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;width:fit-content;transition:background .2s ease" style-hover="background:#fbeeec">◎ Detail</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ detailRow }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ closeDetail }}" style="position:fixed;inset:0;background:rgba(20,10,10,0.5);z-index:80;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeUp .15s ease">
+            <div onClick="{{ stopClick }}" style="background:#fff;border-radius:20px;width:680px;max-width:100%;box-shadow:0 30px 70px rgba(0,0,0,0.35);overflow:hidden;animation:popIn .25s cubic-bezier(.34,1.56,.64,1)">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #f0f0f0">
+                <div style="display:flex;align-items:center;gap:14px">
+                  <div style="width:44px;height:44px;border-radius:12px;background:#b02427;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px">&#128065;</div>
+                  <div style="font-size:17px;font-weight:800;color:#161616">Detail Data &mdash; {{ detailRow.unit }}</div>
+                </div>
+                <div onClick="{{ closeDetail }}" style="font-size:20px;color:#9a9a9a;cursor:pointer;padding:4px">&#10005;</div>
+              </div>
+
+              <div style="padding:24px">
+                <div style="background:#faf6f2;border-radius:16px;padding:24px;display:grid;grid-template-columns:1.3fr 1fr;gap:20px">
+                  <div>
+                    <div style="font-size:15px;font-weight:800;color:#161616;line-height:1.4">{{ detailRow.file }}</div>
+                    <div style="display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;background:#1f7a4c;color:#fff">&#9200;&#65038; {{ detailRow.status }}</div>
+                    <div style="font-size:12px;color:#9a9a9a;margin-top:8px">{{ detailRow.periode }}</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:22px">
+                      <div>
+                        <div style="font-size:10px;font-weight:700;color:#9a9a9a;text-transform:uppercase">Baris Data</div>
+                        <div style="font-size:14px;font-weight:700;color:#161616;margin-top:4px">{{ detailRow.baris }}</div>
+                      </div>
+                      <div>
+                        <div style="font-size:10px;font-weight:700;color:#9a9a9a;text-transform:uppercase">Drafter</div>
+                        <div style="font-size:14px;font-weight:700;color:#161616;margin-top:4px">{{ detailRow.drafter }}</div>
+                      </div>
+                      <div>
+                        <div style="font-size:10px;font-weight:700;color:#9a9a9a;text-transform:uppercase">Timestamp</div>
+                        <div class="mono" style="font-size:12px;font-weight:700;color:#161616;margin-top:4px">{{ detailRow.timestamp }}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style="font-size:11px;font-weight:700;color:#9a9a9a;text-align:center;margin-bottom:16px">Workflow Approval Data</div>
+                    <div style="display:flex;align-items:center;justify-content:center;gap:10px">
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+                        <div style="width:52px;height:52px;border-radius:50%;border:2px solid #3b82f6;color:#3b82f6;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">{{ detailRow.drafterInitial }}</div>
+                        <div style="font-size:10px;font-weight:700;color:#9a9a9a;text-transform:uppercase">Drafter</div>
+                        <div style="font-size:12px;font-weight:700;color:#161616;text-align:center">{{ detailRow.drafter }}</div>
+                        <div class="mono" style="font-size:10px;color:#9a9a9a">{{ detailRow.timestamp }}</div>
+                      </div>
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:34px">
+                        <div style="color:#c4c4c4;font-size:16px">&rarr;</div>
+                        <div style="font-size:10px;font-weight:700;color:#1f7a4c">disetujui</div>
+                      </div>
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+                        <div style="width:52px;height:52px;border-radius:50%;border:2px solid #1f7a4c;color:#1f7a4c;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">{{ detailRow.approverInitial }}</div>
+                        <div style="font-size:10px;font-weight:700;color:#9a9a9a;text-transform:uppercase">Approver</div>
+                        <div style="font-size:12px;font-weight:700;color:#161616;text-align:center">{{ detailRow.approver }}</div>
+                        <div class="mono" style="font-size:10px;color:#9a9a9a">{{ detailRow.approveTimestamp }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-top:1px solid #f0f0f0">
+                <div style="font-size:12px;color:#9a9a9a">Angka dalam Juta Rupiah</div>
+                <div style="font-size:13px;font-weight:700;color:#b02427;cursor:pointer">Lihat Detail Lengkap &rarr;</div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="font-size:12px;color:#9a9a9a;margin-top:16px">{{ uploadRows.length }} Data · Angka dalam Juta Rupiah</div>
+      </div>
+    </sc-if>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { hoverIcon: null, page: 'home', uploadTab: 'sheet', selectedKpiRow: null, showProfile: false, showNotif: false, showFilter: false, selectedUploadRow: null, detailRowIndex: null };
+
+  uploadData = [
+    { unit: 'PT ADCP', periode: 'Agustus 2026', file: 'PT ADCP - RKAP 2027 dan RJPP 2027-2036 - 01082026.xlsx', baris: '0', drafter: 'Iwan Sahputra', timestamp: '05/08/2026 06:25', status: 'Disetujui' },
+    { unit: 'PT APB', periode: 'Agustus 2026', file: 'PT APB - RKAP 2027 dan RJPP 2027-2036 - 01082026.xlsx', baris: '12.867', drafter: 'Febria Sahrina', timestamp: '05/08/2026 05:00', status: 'Disetujui' },
+    { unit: 'PT APG', periode: 'Agustus 2026', file: 'PT APG - RKAP 2027 dan RJPP 2027-2036 - 01082026.xlsx', baris: '7.755', drafter: 'Shiva Twinandilla', timestamp: '05/08/2026 04:14', status: 'Disetujui' },
+    { unit: 'Dept. Gedung', periode: 'Agustus 2026', file: 'Dept. GEDUNG - RKAP 2027 dan RJPP 2027-2036 - 0108202\u2026', baris: '7.995', drafter: 'Agus Sudiat', timestamp: '05/08/2026 04:13', status: 'Disetujui' },
+    { unit: 'Dept. PKA', periode: 'Agustus 2026', file: 'Dept. PKA - RKAP 2027 dan RJPP 2027-2036 - 01082026.xlsx', baris: '3.030', drafter: 'Dery SG', timestamp: '05/08/2026 04:12', status: 'Disetujui' },
+    { unit: 'PT APP', periode: 'Agustus 2026', file: 'PT APP - RKAP 2027 dan RJPP 2027-2036 - 01082026.xlsx', baris: '211', drafter: 'Rivans AA', timestamp: '05/08/2026 04:08', status: 'Disetujui' },
+    { unit: 'Dept. E&I', periode: 'Agustus 2026', file: 'Dept. E&I - RKAP 2027 dan RJPP 2027-2036 - 01082026.xlsx', baris: '4.083', drafter: 'Aditya DN', timestamp: '05/08/2026 04:07', status: 'Disetujui' },
+    { unit: 'Dept. INFRA 2', periode: 'Agustus 2026', file: 'Dept. INFRA 2 - RKAP 2027 dan RJPP 2027-2036 - 01082026\u2026', baris: '13.534', drafter: 'Agung Wijayanto', timestamp: '05/08/2026 04:06', status: 'Disetujui' },
+    { unit: 'Dept. INFRA 1', periode: 'Agustus 2026', file: 'Dept. INFRA 1 - RKAP 2027 dan RJPP 2027-2036 - 01082026\u2026', baris: '13.311', drafter: 'Muhamad Sidik', timestamp: '05/08/2026 04:04', status: 'Disetujui' },
+  ];
+
+  goPage(p) { this.setState({ page: p }); }
+
+  renderVals() {
+    const isHome = this.state.page === 'home';
+    const isUpload = this.state.page === 'upload';
+
+    const railBase = [
+      { glyph: '\u2302', flyoutTitle: null, flyoutItems: [], page: 'home' },
+      { glyph: '\u2191', flyoutTitle: null, flyoutItems: [], page: 'upload' },
+      { glyph: '\u2630', flyoutTitle: 'LAPORAN', flyoutItems: ['RJPP', 'RKAP', 'Graphic / KPI', 'Finance'], page: null },
+      { glyph: '\u2699', flyoutTitle: null, flyoutItems: [], page: null },
+      { glyph: '\u25CE', flyoutTitle: null, flyoutItems: [], page: null },
+    ];
+    const railIcons = railBase.map((ic, i) => {
+      const active = ic.page && this.state.page === ic.page;
+      return {
+        glyph: ic.glyph,
+        bg: active ? '#9e1616' : 'transparent',
+        color: active ? '#fff' : '#8a8a8a',
+        hoverBg: active ? '#9e1616' : 'rgba(0,0,0,0.06)',
+        pulse: active ? 'pulseRing 2.2s ease-out infinite' : 'none',
+        onClick: ic.page ? () => this.goPage(ic.page) : () => {},
+        onEnter: () => this.setState({ hoverIcon: i }),
+        onLeave: () => this.setState({ hoverIcon: null }),
+        showFlyout: this.state.hoverIcon === i && ic.flyoutItems.length > 0,
+        flyoutTitle: ic.flyoutTitle,
+        flyoutItems: ic.flyoutItems,
+      };
+    });
+
+    const statusCards = [
+      { label: 'Menunggu Approval', value: '0', period: 'Agustus 2026', bg: 'linear-gradient(135deg, #d98588, #a94547)', shadow: 'rgba(139,28,30,0.30)', icon: '\u23F0\uFE0E', iconAnim: 'softPulse 2.4s ease-in-out infinite' },
+      { label: 'Data Approval', value: '9', period: 'Agustus 2026', bg: 'linear-gradient(135deg, #ef8790, #cc4148)', shadow: 'rgba(198,42,54,0.30)', icon: '\u2713', iconAnim: 'none' },
+      { label: 'Data Ditolak', value: '0', period: 'Agustus 2026', bg: 'linear-gradient(135deg, #eaa89f, #d97463)', shadow: 'rgba(196,101,79,0.30)', icon: '\u2715', iconAnim: 'none' },
+    ];
+
+    const kpiYears = ['2026', '2027', '2028', '2029', '2030'];
+    const kpiRows = [
+      { label: 'Pendapatan', values: ['6.179.212', '650.636', '\u2013', '\u2013', '\u2013'] },
+      { label: 'Kontrak Baru', values: ['\u2013', '\u2013', '\u2013', '\u2013', '\u2013'] },
+      { label: 'Laba Kotor', values: ['15.906.671', '9.084.910', '10.623.784', '15.121.062', '\u2013'] },
+      { label: 'EBITDA', values: ['23.182.652', '681.040', '756.283', '806.073', '\u2013'] },
+      { label: 'Total Aset', values: ['\u2013', '\u2013', '\u2013', '\u2013', '\u2013'] },
+      { label: 'Order Book', values: ['\u2013', '\u2013', '\u2013', '\u2013', '\u2013'] },
+    ].map((row, i) => {
+      const selected = this.state.selectedKpiRow === i;
+      return {
+        ...row,
+        onClick: () => this.setState({ selectedKpiRow: selected ? null : i }),
+        bg: selected ? '#ffffff' : (i % 2 === 1 ? '#fafafa' : 'transparent'),
+        shadow: selected ? '0 6px 18px rgba(0,0,0,0.10)' : 'none',
+      };
+    });
+
+    const trendRaw = [
+      { year: '2017', pct: 62 }, { year: '2018', pct: 70 }, { year: '2019', pct: 80 },
+      { year: '2020', pct: 56 }, { year: '2021', pct: 94 }, { year: '2022', pct: 58 },
+      { year: '2023', pct: 90 }, { year: '2024', pct: 72 }, { year: '2025', pct: 42 },
+    ];
+    let peakIndex = 0;
+    trendRaw.forEach((b, i) => { if (b.pct > trendRaw[peakIndex].pct) peakIndex = i; });
+    const trendBars = trendRaw.map((b, i) => ({
+      year: b.year,
+      h: (b.pct * 1.8) + 'px',
+      color: i === peakIndex ? '#b02427' : '#d9685f',
+    }));
+    const peakLeftPct = (((peakIndex + 0.5) / trendRaw.length) * 100) + '%';
+    const peakLabel = trendRaw[peakIndex].year;
+
+    const recentUploads = [
+      { name: 'PT ADCP', status: 'Disetujui' },
+      { name: 'PT APB', status: 'Disetujui' },
+      { name: 'PT APG', status: 'Disetujui' },
+      { name: 'Dept. Gedung', status: 'Disetujui' },
+      { name: 'Dept. PKA', status: 'Disetujui' },
+    ];
+
+    const sheetActive = this.state.uploadTab === 'sheet';
+
+    return {
+      isHome, isUpload,
+      pageSubtitle: isUpload ? 'Spread Sheet & History Upload' : 'Dashboard',
+      railIcons, statusCards, kpiYears, kpiRows, trendBars, recentUploads, peakLeftPct, peakLabel,
+      pendingUnits: ['Departemen Infrastruktur I belum upload', 'Departemen Infrastruktur II belum upload'],
+      showProfile: this.state.showProfile,
+      showNotif: this.state.showNotif,
+      toggleProfile: () => this.setState(s => ({ showProfile: !s.showProfile, showNotif: false })),
+      toggleNotif: () => this.setState(s => ({ showNotif: !s.showNotif, showProfile: false })),
+      notifications: [
+        { title: 'Data PT APB', tag: 'Disetujui', tagBg: '#e3f5ea', tagColor: '#1f7a4c', desc: 'Upload RKAP 2027 dan RJPP 2027-2036 telah disetujui.' },
+        { title: 'Dept. Gedung', tag: 'Menunggu', tagBg: '#fbeeec', tagColor: '#b02427', desc: 'Menunggu approval dari Manajer Keuangan.' },
+        { title: 'Reminder', tag: 'Info', tagBg: '#f2f2f2', tagColor: '#5a5a5a', desc: '2 unit kerja belum upload data periode Agustus 2026.' },
+      ],
+      uploadRows: this.uploadData.map((r, i) => {
+        const selected = this.state.selectedUploadRow === i;
+        return {
+          ...r,
+          onClick: () => this.setState({ selectedUploadRow: selected ? null : i }),
+          onOpenDetail: (e) => { e.stopPropagation(); this.setState({ detailRowIndex: i }); },
+          bg: selected ? '#ffffff' : (i % 2 === 1 ? '#fafafa' : 'transparent'),
+          shadow: selected ? '0 6px 18px rgba(0,0,0,0.10)' : 'none',
+        };
+      }),
+      showFilter: this.state.showFilter,
+      toggleFilter: () => this.setState(s => ({ showFilter: !s.showFilter })),
+      detailRow: this.state.detailRowIndex !== null ? {
+        ...this.uploadData[this.state.detailRowIndex],
+        drafterInitial: this.uploadData[this.state.detailRowIndex].drafter.charAt(0),
+        approver: 'Arief Kurniawan',
+        approverInitial: 'A',
+        approveTimestamp: '05/08/2026 15:03',
+      } : null,
+      closeDetail: () => this.setState({ detailRowIndex: null }),
+      stopClick: (e) => e.stopPropagation(),
+      setTabSpreadSheet: () => this.setState({ uploadTab: 'sheet' }),
+      setTabHistory: () => this.setState({ uploadTab: 'history' }),
+      tabSpreadBg: sheetActive ? '#9e1616' : 'transparent',
+      tabSpreadColor: sheetActive ? '#fff' : '#8a8a8a',
+      tabHistoryBg: sheetActive ? 'transparent' : '#9e1616',
+      tabHistoryColor: sheetActive ? '#8a8a8a' : '#fff',
+    };
+  }
+}
+
+</script>
+</body>
+</html>
