@@ -15,20 +15,34 @@
   a{color:#b02427}
   a:hover{color:#e63946}
   .mono{font-family:'JetBrains Mono',monospace}
+  .rjpp-content > * { min-width: 0; }
   @keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(158,22,22,0.45)}70%{box-shadow:0 0 0 10px rgba(158,22,22,0)}100%{box-shadow:0 0 0 0 rgba(158,22,22,0)}}
   @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   @keyframes softPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
   @keyframes popIn{from{opacity:0;transform:scale(.82) translateY(-10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  @keyframes growBar{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @keyframes fadeInPeak{from{opacity:0;transform:translate(-50%,-6px)}to{opacity:1;transform:translate(-50%,0)}}
+  @keyframes bounceDown{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+  @keyframes donutGrow{from{transform:scale(0.5) rotate(-120deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
+  @keyframes donutGlow{0%,100%{filter:drop-shadow(0 0 0 rgba(176,36,39,0))}50%{filter:drop-shadow(0 0 16px rgba(176,36,39,0.45))}}
+  .rjpp-donut-spin{animation:donutGlow 2.6s ease-in-out infinite}
+  .rjpp-export-btn:hover .rjpp-export-icon{animation:bounceDown .6s ease infinite}
+  .rjpp-search-input:focus{outline:none;border-color:#e63946;box-shadow:0 0 0 4px rgba(230,57,70,0.14);width:320px}
+  .rjpp-search-input:focus + .rjpp-search-icon, .rjpp-search-input:hover + .rjpp-search-icon{transform:scale(1.15)}
   @media (max-width: 1100px){
     .rjpp-shell{display:flex !important;flex-direction:column !important;padding:20px !important}
-    .rjpp-content{order:1 !important}
+    .rjpp-content{order:1 !important;padding-top:0 !important}
+    .rjpp-topbar-slot{position:static !important;left:auto !important;right:auto !important;top:auto !important}
     .rjpp-dock{position:static !important;order:2 !important;left:auto !important;right:auto !important;top:auto !important;transform:none !important;flex-direction:row !important;width:fit-content !important;margin:20px auto 0 auto !important;padding:10px 18px !important}
     .rjpp-two-col{grid-template-columns:1fr !important}
     .rjpp-cards-grid{grid-template-columns:1fr !important}
     .rjpp-three-col{grid-template-columns:1fr !important}
-    .rjpp-kpi-scroll{overflow-x:auto !important}
+    .rjpp-kpi-scroll{overflow-x:auto !important;width:100% !important}
+    .rjpp-two-col, .rjpp-three-col, .rjpp-cards-grid{min-width:0 !important}
     .rjpp-kpi-row{min-width:640px !important}
     .rjpp-upload-row{min-width:980px !important}
+    .rjpp-laporan-row{min-width:1300px !important}
+    .rjpp-chart-row{min-width:900px !important}
   }
   @media (max-width: 640px){
     .rjpp-topbar-title{font-size:13px !important}
@@ -37,19 +51,20 @@
 </style>
 </helmet>
 
-<div class="rjpp-shell" style="min-height:100vh;background:#f2f2f2;color:#161616;padding:28px 32px 28px 100px;box-sizing:border-box;position:relative">
+<div class="rjpp-shell" style="min-height:100vh;background:#f2f2f2;color:#161616;padding:28px 32px 28px 118px;box-sizing:border-box;position:relative">
 
   <!-- Floating glass dock -->
-  <div class="rjpp-dock" style="position:fixed;left:22px;top:50%;transform:translateY(-50%);width:64px;background:rgba(255,255,255,0.72);backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,0.5);border-radius:32px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 0;box-shadow:0 20px 44px rgba(0,0,0,0.16);z-index:40">
+  <div class="rjpp-dock" style="position:fixed;left:22px;top:50%;transform:translateY(-50%);width:76px;background:rgba(255,255,255,0.72);backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,0.5);border-radius:36px;display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px 0;box-shadow:0 20px 44px rgba(0,0,0,0.16);z-index:40">
     <sc-for list="{{ railIcons }}" as="ic" hint-placeholder-count="5">
-      <div style="position:relative">
-        <div onClick="{{ ic.onClick }}" onMouseEnter="{{ ic.onEnter }}" onMouseLeave="{{ ic.onLeave }}" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:{{ ic.bg }};color:{{ ic.color }};cursor:pointer;transition:transform .25s ease,background .25s ease;animation:{{ ic.pulse }}" style-hover="transform:scale(1.1);background:{{ ic.hoverBg }}">{{ ic.glyph }}</div>
+      <div onMouseEnter="{{ ic.onEnter }}" onMouseLeave="{{ ic.onLeave }}" style="position:relative">
+        <div onClick="{{ ic.onClick }}" style="width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;background:{{ ic.bg }};color:{{ ic.color }};cursor:pointer;transition:transform .25s ease,background .25s ease;animation:{{ ic.pulse }}" style-hover="transform:scale(1.1);background:{{ ic.hoverBg }}">{{ ic.glyph }}</div>
         <sc-if value="{{ ic.showFlyout }}" hint-placeholder-val="{{ false }}">
-          <div style="position:absolute;left:56px;top:50%;transform:translateY(-50%);background:#fff;border-radius:16px;box-shadow:0 12px 28px rgba(0,0,0,0.14);padding:20px 24px;min-width:170px;z-index:50;animation:fadeUp .18s ease" onMouseEnter="{{ ic.onEnter }}" onMouseLeave="{{ ic.onLeave }}">
-            <div style="font-size:11px;font-weight:700;color:#bcbcbc;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:16px">{{ ic.flyoutTitle }}</div>
-            <div style="display:flex;flex-direction:column;gap:16px">
-              <sc-for list="{{ ic.flyoutItems }}" as="fi" hint-placeholder-count="4">
-                <div style="font-size:14px;font-weight:600;color:#161616;cursor:pointer">{{ fi }}</div>
+          <div style="position:absolute;left:52px;top:0;width:20px;height:100%"></div>
+          <div style="position:absolute;left:72px;top:50%;transform:translateY(-50%);background:#fff;border-radius:16px;box-shadow:0 12px 28px rgba(0,0,0,0.14);padding:10px;min-width:200px;z-index:50;animation:fadeUp .18s ease">
+            <div style="font-size:11px;font-weight:700;color:#bcbcbc;text-transform:uppercase;letter-spacing:0.06em;margin:8px 12px 10px">{{ ic.flyoutTitle }}</div>
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <sc-for list="{{ ic.flyoutItems }}" as="fi" hint-placeholder-count="3">
+                <div onClick="{{ fi.onClick }}" style="font-size:14px;font-weight:600;color:#161616;cursor:pointer;padding:12px;border-radius:10px;transition:background .15s ease" style-hover="background:#fbeeec;color:#b02427">{{ fi.label }}</div>
               </sc-for>
             </div>
           </div>
@@ -58,14 +73,13 @@
     </sc-for>
   </div>
 
-  <div class="rjpp-content" style="display:flex;flex-direction:column;gap:20px;max-width:1440px;margin:0 auto">
+  <div class="rjpp-content" style="display:flex;flex-direction:column;gap:20px;max-width:1440px;margin:0 auto;padding-top:104px">
 
     <!-- Floating glass top bar -->
-    <div style="background:rgba(255,255,255,0.78);backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,0.6);border-radius:20px;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 12px 34px rgba(0,0,0,0.1);position:sticky;top:12px;z-index:30">
+    <div class="rjpp-topbar-slot" style="position:fixed;top:28px;left:118px;right:32px;z-index:30;display:flex;justify-content:center;pointer-events:none">
+    <div class="rjpp-topbar" style="width:100%;max-width:1440px;background:rgba(255,255,255,0.72);backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,0.5);border-radius:32px;padding:12px 28px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 20px 44px rgba(0,0,0,0.16);pointer-events:auto">
       <div style="display:flex;align-items:center;gap:14px">
-        <div style="width:40px;height:40px;border-radius:10px;background:#000000;display:flex;align-items:center;justify-content:center">
-          <div style="width:18px;height:18px;background:#e63946;border-radius:3px"></div>
-        </div>
+        <img src="./assets/fina-logo.png" alt="FINA" style="width:44px;height:44px;border-radius:12px;object-fit:cover;flex:none">
         <div style="min-width:0">
           <div class="rjpp-topbar-title" style="font-size:16px;font-weight:800;color:#0a0a0a;letter-spacing:0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">FINA — FINANCIAL MODELLING ADHI KARYA</div>
           <div class="rjpp-topbar-sub" style="font-size:12px;color:#9a9a9a;margin-top:1px">{{ pageSubtitle }}</div>
@@ -74,7 +88,7 @@
       <div style="display:flex;align-items:center;gap:14px">
 
         <div style="position:relative">
-          <div onClick="{{ toggleNotif }}" style="width:38px;height:38px;border-radius:50%;background:#fbeeec;display:flex;align-items:center;justify-content:center;color:#b02427;font-size:16px;cursor:pointer;transition:transform .2s ease" style-hover="transform:scale(1.08)">🔔&#65038;</div>
+          <div onClick="{{ toggleNotif }}" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg, #ef8790, #cc4148);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;cursor:pointer;transition:transform .2s ease" style-hover="transform:scale(1.08)">&#128276;&#65038;</div>
           <sc-if value="{{ showNotif }}" hint-placeholder-val="{{ false }}">
             <div onClick="{{ toggleNotif }}" style="position:fixed;inset:0;z-index:55"></div>
             <div style="position:absolute;top:50px;right:0;width:310px;background:#fff;border-radius:18px;box-shadow:0 24px 48px rgba(0,0,0,0.18);padding:18px;z-index:60;animation:popIn .22s cubic-bezier(.34,1.56,.64,1);transform-origin:top right">
@@ -118,6 +132,7 @@
 
       </div>
     </div>
+    </div>
 
     <!-- HOME PAGE -->
     <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
@@ -132,8 +147,6 @@
             Periode:
             <select style="border:1px solid #e2e2e2;background:#fff;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;color:#161616">
               <option>Agustus 2026</option>
-              <option>September 2026</option>
-              <option>Oktober 2026</option>
             </select>
           </div>
         </div>
@@ -160,10 +173,10 @@
             <div style="font-size:15px;font-weight:700;color:#0a0a0a">Trend Sales &ndash; Breakdown Eliminir</div>
             <div style="font-size:12px;color:#9a9a9a;margin-top:2px;margin-bottom:24px">Realisasi 2017 sd. 2025 &middot; per Agustus 2026</div>
             <div style="position:relative;flex:1;display:flex;align-items:flex-end;gap:12px;min-height:200px">
-              <div style="position:absolute;left:{{ peakLeftPct }};top:0;transform:translateX(-50%);background:#161616;color:#fff;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;white-space:nowrap">Puncak &middot; {{ peakLabel }}</div>
+              <div style="position:absolute;left:{{ peakLeftPct }};top:0;transform:translateX(-50%);background:#161616;color:#fff;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;white-space:nowrap;animation:fadeInPeak .5s ease .9s both">Puncak &middot; {{ peakLabel }}</div>
               <sc-for list="{{ trendBars }}" as="b" hint-placeholder-count="9">
                 <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;gap:8px">
-                  <div style="width:64%;height:{{ b.h }};background:{{ b.color }};border-radius:8px 8px 0 0;transition:opacity .2s ease" style-hover="opacity:0.75"></div>
+                  <div style="width:64%;height:{{ b.h }};background:{{ b.color }};border-radius:8px 8px 0 0;transform-origin:bottom;animation:growBar .7s cubic-bezier(.22,1,.36,1) {{ b.delay }} both;transition:opacity .2s ease,filter .2s ease" style-hover="filter:brightness(1.08)"></div>
                   <div style="font-size:11px;color:#9a9a9a">{{ b.year }}</div>
                 </div>
               </sc-for>
@@ -200,6 +213,7 @@
           </div>
         </div>
 
+        <div class="rjpp-two-col" style="display:grid;grid-template-columns:2.4fr 1fr;gap:18px;align-items:stretch">
         <div style="background:#fff;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);padding:24px 24px 16px">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px">
             <div>
@@ -209,7 +223,7 @@
             <div style="font-size:13px;font-weight:600;color:#b02427;cursor:pointer;white-space:nowrap">Lihat detail →</div>
           </div>
           <div class="rjpp-kpi-scroll" style="overflow-x:auto">
-            <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.6fr repeat(5,1fr) 0.4fr;background:linear-gradient(135deg, #f0d3d1, #e9bcb5);border-radius:999px;padding:14px 20px;font-size:12px;font-weight:700;color:#8a2224">
+            <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.6fr repeat(5,1fr) 0.4fr;gap:10px;background:linear-gradient(135deg, #f0d3d1, #e9bcb5);border-radius:999px;padding:14px 20px;font-size:12px;font-weight:700;color:#8a2224">
               <div>KPI</div>
               <sc-for list="{{ kpiYears }}" as="y" hint-placeholder-count="5">
                 <div style="text-align:right">{{ y }}</div>
@@ -217,7 +231,7 @@
               <div></div>
             </div>
             <sc-for list="{{ kpiRows }}" as="row" hint-placeholder-count="6">
-              <div onClick="{{ row.onClick }}" class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.6fr repeat(5,1fr) 0.4fr;padding:16px 20px;border-radius:14px;background:{{ row.bg }};box-shadow:{{ row.shadow }};font-size:13px;align-items:center;cursor:pointer;transition:background .15s ease,box-shadow .15s ease" style-hover="background:#f5f5f5">
+              <div onClick="{{ row.onClick }}" class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.6fr repeat(5,1fr) 0.4fr;gap:10px;padding:16px 20px;border-radius:14px;background:{{ row.bg }};box-shadow:{{ row.shadow }};font-size:13px;align-items:center;cursor:pointer;transition:background .15s ease,box-shadow .15s ease" style-hover="background:#f5f5f5">
                 <div style="font-weight:600;color:#161616">{{ row.label }}</div>
                 <sc-for list="{{ row.values }}" as="v" hint-placeholder-count="5">
                   <div class="mono" style="text-align:right;color:#5a5a5a">{{ v }}</div>
@@ -227,54 +241,477 @@
             </sc-for>
           </div>
         </div>
+
+        <div style="background:#fff;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);padding:24px;display:flex;flex-direction:column;align-items:center">
+          <div style="align-self:flex-start;margin-bottom:6px">
+            <div style="font-size:15px;font-weight:700;color:#0a0a0a">Komposisi Pencapaian KPI</div>
+            <div style="font-size:12px;color:#9a9a9a;margin-top:2px">Distribusi realisasi vs sisa target</div>
+          </div>
+          <div style="position:relative;width:172px;height:172px;margin:18px 0" class="rjpp-donut-spin">
+            <div style="width:100%;height:100%;border-radius:50%;background:conic-gradient(#b02427 0deg 220deg, #e63946 220deg 300deg, #d9685f 300deg 340deg, #f2f2f2 340deg 360deg);animation:donutGrow 1.4s cubic-bezier(.22,1,.36,1) both"></div>
+            <div style="position:absolute;inset:20px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px #f2f2f2">
+              <div style="font-size:24px;font-weight:800;color:#0a0a0a">61%</div>
+              <div style="font-size:10px;color:#9a9a9a">Tercapai</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;width:100%">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#7a7a7a"><div style="width:9px;height:9px;border-radius:50%;background:#b02427;flex:none"></div>Pendapatan &amp; EBITDA &middot; 61%</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#7a7a7a"><div style="width:9px;height:9px;border-radius:50%;background:#e63946;flex:none"></div>Order Book &middot; 22%</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#7a7a7a"><div style="width:9px;height:9px;border-radius:50%;background:#d9685f;flex:none"></div>Laba Bersih &middot; 11%</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#7a7a7a"><div style="width:9px;height:9px;border-radius:50%;background:#f2f2f2;flex:none"></div>Sisa Target &middot; 6%</div>
+          </div>
+        </div>
+        </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- LAPORAN PAGE (RJPP & RKAP) -->
+    <sc-if value="{{ isLaporan }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:20px;animation:fadeUp .3s ease">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div style="background:#ececec;border:1px solid #dcdcdc;border-radius:22px;padding:6px;display:flex;gap:6px">
+            <div onClick="{{ setLaporanTabRjpp }}" style="display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:16px;font-size:12px;font-weight:700;cursor:pointer;background:{{ laporanTabRjppBg }};color:{{ laporanTabRjppColor }};transition:background .2s ease,color .2s ease,transform .2s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;transform:translateY(-2px)"><span style="font-size:14px;color:inherit">&#9776;</span>RJPP</div>
+            <div onClick="{{ setLaporanTabRkap }}" style="display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:16px;font-size:12px;font-weight:700;cursor:pointer;background:{{ laporanTabRkapBg }};color:{{ laporanTabRkapColor }};transition:background .2s ease,color .2s ease,transform .2s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;transform:translateY(-2px)"><span style="font-size:14px;color:inherit">&#9783;</span>RKAP</div>
+          </div>
+          <div style="position:relative;display:flex;align-items:center">
+            <input value="{{ laporanSearch }}" onInput="{{ onLaporanSearchChange }}" placeholder="Cari unit, kode, atau sub kode..." class="rjpp-search-input" style="width:280px;border:1px solid #e6d3d1;background:#fff;border-radius:20px;padding:11px 16px 11px 42px;font-size:13px;color:#161616;box-shadow:0 4px 14px rgba(176,36,39,0.06);transition:box-shadow .2s ease,width .2s ease,border-color .2s ease">
+            <span style="position:absolute;left:16px;font-size:15px;color:#161616;pointer-events:none;transition:transform .2s ease" class="rjpp-search-icon">&#128269;</span>
+          </div>
+        </div>
+
+      <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.05)">
+        <div style="background:linear-gradient(135deg, #d98588, #a94547);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;position:relative;overflow:hidden">
+          <div style="position:absolute;right:-40px;top:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.16);filter:blur(8px)"></div>
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;z-index:1">
+            <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.85);letter-spacing:0.05em;text-transform:uppercase">Skenario Kelompok Sasaran</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <sc-for list="{{ scenarioTabs }}" as="tab" hint-placeholder-count="4">
+                <div onClick="{{ tab.onClick }}" style="padding:10px 18px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:{{ tab.bg }};color:{{ tab.color }};backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.35);transition:transform .2s ease,background .2s ease,box-shadow .2s ease" style-hover="transform:translateY(-2px);background:rgba(255,255,255,0.32);box-shadow:0 8px 18px rgba(0,0,0,0.18)">{{ tab.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:relative;z-index:1">
+            <select style="border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;color:#fff">
+              <option style="color:#161616">Agustus 2026</option>
+            </select>
+            <div style="display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;transition:transform .2s ease,background .2s ease" style-hover="transform:translateY(-2px);background:rgba(255,255,255,0.3)">&#9660; Filter</div>
+            <div class="rjpp-export-btn" style="display:flex;align-items:center;gap:9px;border:1px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.28);backdrop-filter:blur(10px);border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;transition:transform .2s ease,background .2s ease,box-shadow .2s ease" style-hover="transform:translateY(-2px);background:rgba(255,255,255,0.4);box-shadow:0 8px 18px rgba(0,0,0,0.18)"><span class="rjpp-export-icon" style="display:inline-flex;width:18px;height:18px;color:#fff">&#8595;</span>Export Data</div>
+          </div>
+        </div>
+
+        <div class="rjpp-kpi-scroll" style="overflow-x:auto;padding:18px 24px 22px">
+          <div class="rjpp-laporan-row" style="display:grid;grid-template-columns:1fr 1fr 1.2fr 1.4fr repeat(9,1fr);gap:10px;background:linear-gradient(135deg, #f0d3d1, #e9bcb5);border-radius:999px;padding:14px 20px;font-size:11px;font-weight:700;color:#8a2224;text-transform:uppercase;letter-spacing:0.02em">
+            <div>Unit</div><div>L/K</div><div>Kode</div><div>Sub Kode</div>
+            <sc-for list="{{ laporanYears }}" as="y" hint-placeholder-count="9">
+              <div style="text-align:right">{{ y }}</div>
+            </sc-for>
+          </div>
+          <sc-for list="{{ laporanRows }}" as="row" hint-placeholder-count="8">
+            <div onClick="{{ row.onClick }}" class="rjpp-laporan-row" style="display:grid;grid-template-columns:1fr 1fr 1.2fr 1.4fr repeat(9,1fr);gap:10px;padding:16px 20px;margin-top:6px;border-radius:14px;background:{{ row.bg }};box-shadow:{{ row.shadow }};font-size:12px;align-items:center;cursor:pointer;transition:background .15s ease" style-hover="background:#f5f5f5">
+              <div style="font-weight:700;color:#161616">{{ row.unit }}</div>
+              <div style="color:#8a8a8a">{{ row.lk }}</div>
+              <div style="font-weight:700;color:#161616">{{ row.kode }}</div>
+              <div style="color:#5a5a5a">{{ row.subKode }}</div>
+              <sc-for list="{{ row.values }}" as="v" hint-placeholder-count="9">
+                <div class="mono" style="text-align:right;color:{{ v.color }};font-weight:{{ v.weight }}">{{ v.text }}</div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      </div>
+    </sc-if>
+
+    <!-- GRAFIK KPI PAGE -->
+    <sc-if value="{{ isGrafik }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:20px;animation:fadeUp .3s ease">
+
+        <div style="background:linear-gradient(135deg, #d98588, #a94547);border-radius:20px;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <select style="border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;color:#fff"><option>Konsolidasi Semua</option></select>
+            <select style="border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;color:#fff"><option>Pilih Unit Kerja</option></select>
+            <select style="border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;color:#fff"><option>Agustus 2026</option></select>
+            <div style="display:flex;gap:6px">
+              <div style="padding:9px 14px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(255,255,255,0.42);color:#fff;cursor:pointer;transition:transform .2s ease" style-hover="transform:translateY(-2px)">Metrik Standar</div>
+              <div style="padding:9px 14px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(255,255,255,0.14);color:#fff;cursor:pointer;transition:transform .2s ease" style-hover="transform:translateY(-2px)">Varian Khusus</div>
+            </div>
+            <select style="border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;color:#fff"><option>INCOME STATEMENT</option></select>
+            <select style="border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;color:#fff"><option>SALES</option></select>
+            <div style="display:flex;gap:6px">
+              <div style="padding:9px 14px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(255,255,255,0.14);color:#fff;cursor:pointer;transition:transform .2s ease" style-hover="transform:translateY(-2px)">Internal</div>
+              <div style="padding:9px 14px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(255,255,255,0.42);color:#fff;cursor:pointer;transition:transform .2s ease" style-hover="transform:translateY(-2px)">External</div>
+            </div>
+          </div>
+          <div class="rjpp-export-btn" style="display:flex;align-items:center;gap:9px;border-radius:10px;padding:9px 16px;font-size:12px;font-weight:700;color:#fff;background:rgba(255,255,255,0.28);backdrop-filter:blur(10px);cursor:pointer;transition:transform .2s ease,box-shadow .2s ease" style-hover="transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,0.18)"><span class="rjpp-export-icon" style="display:inline-flex;width:16px;height:16px;color:#fff">&#8595;</span>Export Data</div>
+        </div>
+
+        <div class="rjpp-cards-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+          <sc-for list="{{ grafikCards }}" as="card" hint-placeholder-count="4">
+            <div style="background:{{ card.bg }};border-radius:18px;padding:20px;position:relative;overflow:hidden;box-shadow:0 8px 20px rgba(139,28,30,0.2);transition:transform .25s ease" style-hover="transform:translateY(-4px)">
+              <div style="position:absolute;right:-30px;bottom:-40px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,0.18);filter:blur(8px)"></div>
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;position:relative;z-index:1">
+                <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.85)">{{ card.label }}</div>
+                <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;flex:none;line-height:1">{{ card.icon }}</div>
+              </div>
+              <div style="font-size:26px;font-weight:800;color:#fff;margin-top:10px;position:relative;z-index:1">{{ card.value }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="background:#fff;border-radius:16px;padding:24px 28px;box-shadow:0 4px 16px rgba(0,0,0,0.05)">
+          <div style="font-size:15px;font-weight:700;color:#0a0a0a">Tren SALES &ndash; Breakdown Eliminir</div>
+          <div style="font-size:12px;color:#9a9a9a;margin-top:2px;margin-bottom:24px">Dalam Juta Rupiah &middot; Realisasi 2017&ndash;2025 &amp; RJPP 2026&ndash;2035</div>
+          <div class="rjpp-kpi-scroll" style="overflow-x:auto">
+            <div class="rjpp-chart-row" style="position:relative;display:flex;align-items:flex-end;gap:8px;height:220px">
+              <div style="position:absolute;left:{{ grafikPeakLeftPct }};top:0;transform:translateX(-50%);background:#161616;color:#fff;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;white-space:nowrap;animation:fadeInPeak .5s ease .9s both">Puncak &middot; {{ grafikPeakLabel }}</div>
+              <sc-for list="{{ grafikBars }}" as="b" hint-placeholder-count="19">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;gap:8px">
+                  <div style="width:70%;display:flex;flex-direction:column-reverse;transform-origin:bottom;animation:growBar .7s cubic-bezier(.22,1,.36,1) {{ b.delay }} both">
+                    <div style="height:{{ b.elimH }};background:#d9685f;border-radius:0;transition:opacity .2s ease" style-hover="opacity:0.8"></div>
+                    <div style="height:{{ b.exclH }};background:{{ b.color }};border-radius:6px 6px 0 0;transition:filter .2s ease" style-hover="filter:brightness(1.1)"></div>
+                  </div>
+                  <div style="font-size:10px;color:#9a9a9a">{{ b.year }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;gap:20px;margin-top:16px;padding-top:16px;border-top:1px solid #f0f0f0">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#7a7a7a"><div style="width:10px;height:10px;border-radius:50%;background:#8f1f1c"></div>SALES [excl. Eliminir]</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#7a7a7a"><div style="width:10px;height:10px;border-radius:50%;background:#d9685f"></div>SALES [Eliminir]</div>
+          </div>
+        </div>
+
+        <div style="background:#fff;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);padding:24px 24px 16px">
+          <div style="font-size:15px;font-weight:700;color:#0a0a0a">KPI Konsolidasi 2026&ndash;2035</div>
+          <div style="font-size:12px;color:#9a9a9a;margin-top:2px;margin-bottom:18px">Dalam Juta Rupiah</div>
+          <div class="rjpp-kpi-scroll" style="overflow-x:auto">
+            <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.6fr repeat(9,1fr);gap:10px;background:linear-gradient(135deg, #f0d3d1, #e9bcb5);border-radius:999px;padding:14px 20px;font-size:12px;font-weight:700;color:#8a2224">
+              <div>KPI</div>
+              <sc-for list="{{ grafikKpiYears }}" as="y" hint-placeholder-count="9">
+                <div style="text-align:right">{{ y }}</div>
+              </sc-for>
+            </div>
+            <sc-for list="{{ grafikKpiRows }}" as="row" hint-placeholder-count="7">
+              <div onClick="{{ row.onClick }}" class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.6fr repeat(9,1fr);gap:10px;padding:16px 20px;margin-top:6px;border-radius:14px;background:{{ row.bg }};box-shadow:{{ row.shadow }};font-size:13px;align-items:center;cursor:pointer;transition:background .15s ease" style-hover="background:#f5f5f5">
+                <div style="font-weight:600;color:#161616">{{ row.label }}</div>
+                <sc-for list="{{ row.values }}" as="v" hint-placeholder-count="9">
+                  <div class="mono" style="text-align:right;color:{{ v.color }}">{{ v.text }}</div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- FINANCE PAGE -->
+    <sc-if value="{{ isFinance }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:20px;animation:fadeUp .3s ease">
+
+        <div style="background:linear-gradient(135deg, #d98588, #a94547);border-radius:20px;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <select style="border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;color:#fff"><option>Konsolidasi</option></select>
+            <select style="border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;color:#fff"><option>Pilih Unit Kerja</option></select>
+            <select style="border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;color:#fff"><option>Agustus 2026</option></select>
+          </div>
+          <div class="rjpp-export-btn" style="display:flex;align-items:center;gap:9px;border-radius:10px;padding:9px 16px;font-size:12px;font-weight:700;color:#fff;background:rgba(255,255,255,0.28);backdrop-filter:blur(10px);cursor:pointer;transition:transform .2s ease,box-shadow .2s ease" style-hover="transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,0.18)"><span class="rjpp-export-icon" style="display:inline-flex;width:16px;height:16px;color:#fff">&#8595;</span>Export Data</div>
+        </div>
+
+        <div style="background:#fff;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);padding:24px 24px 16px">
+          <div style="font-size:15px;font-weight:700;color:#0a0a0a">Financial Ratios</div>
+          <div style="height:14px"></div>
+          <div class="rjpp-kpi-scroll" style="overflow-x:auto">
+            <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.6fr repeat(9,1fr);gap:10px;background:linear-gradient(135deg, #f0d3d1, #e9bcb5);border-radius:999px;padding:14px 20px;font-size:12px;font-weight:700;color:#8a2224">
+              <div>Rasio</div>
+              <sc-for list="{{ financeYears }}" as="y" hint-placeholder-count="9">
+                <div style="text-align:right">{{ y }}</div>
+              </sc-for>
+            </div>
+            <sc-for list="{{ ratioRows }}" as="row" hint-placeholder-count="6">
+              <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.6fr repeat(9,1fr);gap:10px;padding:14px 20px;margin-top:6px;border-radius:14px;background:{{ row.bg }};font-size:13px;align-items:center">
+                <div style="font-weight:600;color:#161616">{{ row.label }}</div>
+                <sc-for list="{{ row.values }}" as="v" hint-placeholder-count="9">
+                  <div class="mono" style="text-align:right;color:{{ v.color }};font-weight:700">{{ v.text }}</div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="background:#fff;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);padding:24px 24px 16px">
+          <div style="font-size:15px;font-weight:700;color:#0a0a0a">Income Statement (Dalam Juta Rupiah)</div>
+          <div style="height:14px"></div>
+          <div class="rjpp-kpi-scroll" style="overflow-x:auto">
+            <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.1fr 1.4fr repeat(9,1fr);background:linear-gradient(135deg, #f0d3d1, #e9bcb5);border-radius:999px;padding:14px 20px;font-size:11px;font-weight:700;color:#8a2224;text-transform:uppercase">
+              <div>Kode</div><div>Sub Kode</div>
+              <sc-for list="{{ financeYears }}" as="y" hint-placeholder-count="9">
+                <div style="text-align:right">{{ y }}</div>
+              </sc-for>
+            </div>
+            <sc-for list="{{ incomeRows }}" as="row" hint-placeholder-count="8">
+              <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.1fr 1.4fr repeat(9,1fr);padding:12px 20px;margin-top:4px;border-radius:12px;background:{{ row.bg }};font-size:12px;align-items:center">
+                <div style="font-weight:700;color:#161616">{{ row.kode }}</div>
+                <div style="color:#5a5a5a">{{ row.sub }}</div>
+                <sc-for list="{{ row.values }}" as="v" hint-placeholder-count="9">
+                  <div class="mono" style="text-align:right;color:{{ v.color }};font-weight:600">{{ v.text }}</div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- USER MANAGEMENT PAGE -->
+    <sc-if value="{{ isUserMgmt }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:20px;animation:fadeUp .3s ease">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div style="background:#ececec;border:1px solid #dcdcdc;border-radius:26px;padding:8px;display:flex;gap:6px;box-shadow:0 8px 20px rgba(0,0,0,0.06);width:fit-content">
+            <div onClick="{{ setUserTabKelola }}" style="display:flex;align-items:center;gap:9px;padding:11px 20px;border-radius:18px;font-size:13px;font-weight:700;cursor:pointer;background:{{ tabKelolaBg }};color:{{ tabKelolaColor }};box-shadow:{{ tabKelolaShadow }};transition:background .25s ease,color .25s ease,transform .2s ease,box-shadow .25s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;transform:translateY(-2px);box-shadow:0 8px 18px rgba(176,36,39,0.3)"><span style="font-size:18px;font-weight:800;color:inherit">&#9776;</span>Kelola User</div>
+            <div onClick="{{ setUserTabPeriode }}" style="display:flex;align-items:center;gap:9px;padding:11px 20px;border-radius:18px;font-size:13px;font-weight:700;cursor:pointer;background:{{ tabPeriodeBg }};color:{{ tabPeriodeColor }};box-shadow:{{ tabPeriodeShadow }};transition:background .25s ease,color .25s ease,transform .2s ease,box-shadow .25s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;transform:translateY(-2px);box-shadow:0 8px 18px rgba(176,36,39,0.3)"><span style="font-size:18px;font-weight:800;color:inherit">&#9783;</span>Periode Upload</div>
+          </div>
+
+          <div style="position:relative;display:flex;align-items:center">
+            <input value="{{ searchQuery }}" onInput="{{ onSearchChange }}" placeholder="Cari nama, email, atau label periode..." class="rjpp-search-input" style="width:280px;border:1px solid #e6d3d1;background:#fff;border-radius:20px;padding:11px 16px 11px 42px;font-size:13px;color:#161616;box-shadow:0 4px 14px rgba(176,36,39,0.06);transition:box-shadow .2s ease,width .2s ease,border-color .2s ease">
+            <span style="position:absolute;left:16px;font-size:15px;color:#161616;pointer-events:none;transition:transform .2s ease" class="rjpp-search-icon">&#128269;</span>
+          </div>
+        </div>
+
+        <sc-if value="{{ userTabKelola }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.05)">
+            <div style="padding:18px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;background:linear-gradient(135deg, #d98588, #a94547)">
+              <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.9)">{{ userRows.length }} user terdaftar</div>
+              <div style="display:flex;align-items:center;gap:8px;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;color:#a94547;background:#fff;cursor:pointer;transition:transform .2s ease" style-hover="transform:translateY(-2px)">+ Tambah User</div>
+            </div>
+            <div class="rjpp-kpi-scroll" style="overflow-x:auto;padding:18px 24px 22px">
+              <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.3fr 1.6fr 1.2fr 1fr 0.9fr 0.9fr;gap:10px;background:linear-gradient(135deg, #f0d3d1, #e9bcb5);border-radius:999px;padding:14px 20px;font-size:12px;font-weight:700;color:#8a2224">
+                <div>Nama</div><div>Email</div><div>Role</div><div>Unit Kerja</div><div>Terdaftar</div><div></div>
+              </div>
+              <sc-for list="{{ userRows }}" as="u" hint-placeholder-count="16">
+                <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.3fr 1.6fr 1.2fr 1fr 0.9fr 0.9fr;padding:14px 20px;margin-top:6px;border-radius:14px;background:{{ u.bg }};font-size:13px;align-items:center">
+                  <div style="font-weight:700;color:#161616">{{ u.name }}</div>
+                  <div style="color:#5a5a5a">{{ u.email }}</div>
+                  <div><span style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;background:{{ u.roleBg }};color:{{ u.roleColor }}">{{ u.role }}</span></div>
+                  <div style="color:#5a5a5a">{{ u.unit }}</div>
+                  <div class="mono" style="color:#9a9a9a;font-size:12px">{{ u.tanggal }}</div>
+                  <div style="display:flex;gap:12px;justify-content:flex-end;font-size:12px;font-weight:700">
+                    <span style="color:#b02427;cursor:pointer">Edit</span>
+                    <sc-if value="{{ u.showHapus }}" hint-placeholder-val="{{ true }}">
+                      <span style="color:#e63946;cursor:pointer">Hapus</span>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isPeriodeTab }}" hint-placeholder-val="{{ false }}">
+          <div class="rjpp-two-col" style="display:grid;grid-template-columns:1fr 1.6fr;gap:18px;align-items:start">
+            <div style="display:flex;flex-direction:column;gap:18px">
+              <div style="background:#fff;border-radius:16px;padding:22px;box-shadow:0 4px 16px rgba(0,0,0,0.05)">
+                <div style="font-size:15px;font-weight:700;color:#0a0a0a">Generate Bulanan</div>
+                <div style="font-size:12px;color:#8a8a8a;margin-top:6px;margin-bottom:16px">Buat 12 periode bulan (Jan&ndash;Des) untuk satu tahun sekaligus.</div>
+                <div style="display:flex;gap:10px">
+                  <select style="flex:1;border:1px solid #e2e2e2;border-radius:10px;padding:10px 14px;font-size:13px;color:#161616"><option>2026</option></select>
+                  <div style="border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg, #ef8790, #cc4148);cursor:pointer;white-space:nowrap;transition:transform .2s ease" style-hover="transform:translateY(-2px)">Generate</div>
+                </div>
+              </div>
+
+              <div style="background:#fff;border-radius:16px;padding:22px;box-shadow:0 4px 16px rgba(0,0,0,0.05)">
+                <div style="font-size:15px;font-weight:700;color:#0a0a0a;margin-bottom:16px">Tambah Manual</div>
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <div>
+                    <div style="font-size:12px;color:#8a8a8a;margin-bottom:6px">Tahun</div>
+                    <input value="2026" style="width:100%;border:1px solid #e2e2e2;border-radius:10px;padding:10px 14px;font-size:13px;color:#161616;box-sizing:border-box" readonly="">
+                  </div>
+                  <div>
+                    <div style="font-size:12px;color:#8a8a8a;margin-bottom:6px">Nomor Bulan (1&ndash;12)</div>
+                    <input value="8" style="width:100%;border:1px solid #e2e2e2;border-radius:10px;padding:10px 14px;font-size:13px;color:#161616;box-sizing:border-box" readonly="">
+                  </div>
+                  <div>
+                    <div style="font-size:12px;color:#8a8a8a;margin-bottom:6px">Label</div>
+                    <input value="August 2026" style="width:100%;border:1px solid #e2e2e2;border-radius:10px;padding:10px 14px;font-size:13px;color:#161616;box-sizing:border-box" readonly="">
+                  </div>
+                  <div>
+                    <div style="font-size:12px;color:#8a8a8a;margin-bottom:6px">Tanggal Mulai</div>
+                    <input value="01/08/2026" style="width:100%;border:1px solid #e2e2e2;border-radius:10px;padding:10px 14px;font-size:13px;color:#161616;box-sizing:border-box" readonly="">
+                  </div>
+                  <div>
+                    <div style="font-size:12px;color:#8a8a8a;margin-bottom:6px">Tanggal Selesai</div>
+                    <input value="31/08/2026" style="width:100%;border:1px solid #e2e2e2;border-radius:10px;padding:10px 14px;font-size:13px;color:#161616;box-sizing:border-box" readonly="">
+                  </div>
+                  <div style="text-align:center;border-radius:10px;padding:12px;font-size:13px;font-weight:700;color:#fff;background:#1a1a1a;cursor:pointer;transition:transform .2s ease" style-hover="transform:translateY(-2px)">Tambah</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.05)">
+              <div style="padding:18px 24px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg, #d98588, #a94547)">
+                <div style="font-size:15px;font-weight:700;color:#fff">Daftar Periode</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.85)">{{ periodeRows.length }} total</div>
+              </div>
+              <div class="rjpp-kpi-scroll" style="overflow-x:auto;padding:18px 24px 22px">
+                <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.2fr 1.6fr 0.8fr 0.9fr 1fr 1fr;gap:10px;background:linear-gradient(135deg, #f0d3d1, #e9bcb5);border-radius:999px;padding:14px 20px;font-size:12px;font-weight:700;color:#8a2224">
+                  <div>Label</div><div>Periode</div><div style="text-align:right">Upload</div><div>Status</div><div>Kunci</div><div></div>
+                </div>
+                <sc-for list="{{ periodeRows }}" as="p" hint-placeholder-count="3">
+                  <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.2fr 1.6fr 0.8fr 0.9fr 1fr 1fr;padding:16px 20px;margin-top:6px;border-radius:14px;background:transparent;font-size:13px;align-items:center">
+                    <div style="font-weight:700;color:#161616">{{ p.label }}</div>
+                    <div class="mono" style="color:#5a5a5a">{{ p.periode }}</div>
+                    <div class="mono" style="text-align:right;color:#5a5a5a">{{ p.upload }}</div>
+                    <div><span style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;background:#e3f5ea;color:#1f7a4c">{{ p.status }}</span></div>
+                    <div><span style="font-size:11px;font-weight:700;color:#3b82f6;cursor:pointer">{{ p.kunci }}</span></div>
+                    <div style="display:flex;gap:12px;justify-content:flex-end;font-size:12px;font-weight:700">
+                      <span style="color:#b02427;cursor:pointer">Nonaktifkan</span>
+                      <span style="color:#8a8a8a;cursor:pointer">Kunci</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <!-- MASTER DATA PAGE -->
+    <sc-if value="{{ isMasterData }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:20px;animation:fadeUp .3s ease">
+
+        <div style="background:#ececec;border:1px solid #dcdcdc;border-radius:20px;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <sc-for list="{{ masterTabs }}" as="tab" hint-placeholder-count="3">
+              <div onClick="{{ tab.onClick }}" style="display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:{{ tab.bg }};color:{{ tab.color }};box-shadow:{{ tab.shadow }};transition:transform .2s ease,background .2s ease,color .2s ease,box-shadow .2s ease" style-hover="transform:translateY(-2px);background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;box-shadow:0 8px 18px rgba(176,36,39,0.3)"><span style="font-size:14px;font-weight:800;color:inherit">{{ tab.icon }}</span>{{ tab.label }}</div>
+            </sc-for>
+          </div>
+          <div class="rjpp-export-btn" style="display:flex;align-items:center;gap:9px;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg, #ef8790, #cc4148);cursor:pointer;transition:transform .2s ease,box-shadow .2s ease" style-hover="transform:translateY(-2px);box-shadow:0 8px 18px rgba(176,36,39,0.3)"><span class="rjpp-export-icon" style="display:inline-flex;width:16px;height:16px;color:#fff">&#8595;</span>Export Data</div>
+        </div>
+
+        <div style="background:#fff;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);padding:24px 24px 16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div style="font-size:15px;font-weight:700;color:#0a0a0a">{{ masterActiveLabel }}</div>
+            <sc-if value="{{ isValidasiTab }}" hint-placeholder-val="{{ false }}">
+              <div onClick="{{ openMasterAdd }}" style="display:flex;align-items:center;gap:6px;border-radius:10px;padding:9px 16px;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg, #ef8790, #cc4148);cursor:pointer;transition:transform .2s ease" style-hover="transform:translateY(-2px)">+ Tambah</div>
+            </sc-if>
+          </div>
+          <div class="rjpp-kpi-scroll" style="overflow-x:auto">
+            <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.4fr repeat(5,1fr) 0.9fr;gap:10px;background:linear-gradient(135deg, #f0d3d1, #e9bcb5);border-radius:999px;padding:14px 20px;font-size:12px;font-weight:700;color:#8a2224">
+              <div>Item</div>
+              <sc-for list="{{ masterYears }}" as="y" hint-placeholder-count="5">
+                <div style="text-align:right">{{ y }}</div>
+              </sc-for>
+              <div></div>
+            </div>
+            <sc-for list="{{ masterDataRows }}" as="row" hint-placeholder-count="4">
+              <div class="rjpp-kpi-row" style="display:grid;grid-template-columns:1.4fr repeat(5,1fr) 0.9fr;padding:16px 20px;margin-top:6px;border-radius:14px;background:{{ row.bg }};font-size:13px;align-items:center">
+                <div style="font-weight:700;color:#161616">{{ row.label }}</div>
+                <sc-for list="{{ row.values }}" as="v" hint-placeholder-count="5">
+                  <div class="mono" style="text-align:right;color:{{ v.color }}">{{ v.text }}</div>
+                </sc-for>
+                <div style="display:flex;gap:10px;justify-content:flex-end;font-size:12px;font-weight:700">
+                  <sc-for list="{{ row.actions }}" as="act" hint-placeholder-count="2">
+                    <span onClick="{{ act.onClick }}" style="color:{{ act.color }};cursor:pointer">{{ act.label }}</span>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{ masterEditRow }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ closeMasterEdit }}" style="position:fixed;inset:0;background:rgba(20,10,10,0.5);z-index:80;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeUp .15s ease">
+            <div onClick="{{ stopClick }}" style="background:#fff;border-radius:20px;width:440px;max-width:100%;box-shadow:0 30px 70px rgba(0,0,0,0.35);animation:popIn .25s cubic-bezier(.34,1.56,.64,1);overflow:hidden">
+              <div style="padding:20px 24px;background:linear-gradient(135deg, #d98588, #a94547)">
+                <div style="font-size:16px;font-weight:800;color:#fff">{{ masterEditTitle }}</div>
+              </div>
+              <div style="padding:22px 24px;display:flex;flex-direction:column;gap:14px">
+                <sc-for list="{{ masterEditFields }}" as="f" hint-placeholder-count="5">
+                  <div>
+                    <div style="font-size:12px;color:#8a8a8a;margin-bottom:6px">{{ f.label }}</div>
+                    <input value="{{ f.value }}" style="width:100%;border:1px solid #e2e2e2;border-radius:10px;padding:10px 14px;font-size:13px;color:#161616;box-sizing:border-box">
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;border-top:1px solid #f0f0f0">
+                <div onClick="{{ closeMasterEdit }}" style="padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;color:#5a5a5a;background:#f2f2f2;cursor:pointer">Batal</div>
+                <div onClick="{{ closeMasterEdit }}" style="padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg, #ef8790, #cc4148);cursor:pointer;transition:transform .2s ease" style-hover="transform:translateY(-2px)">Simpan</div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showMasterDelete }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ closeMasterDelete }}" style="position:fixed;inset:0;background:rgba(20,10,10,0.5);z-index:80;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeUp .15s ease">
+            <div onClick="{{ stopClick }}" style="background:#fff;border-radius:20px;width:380px;max-width:100%;box-shadow:0 30px 70px rgba(0,0,0,0.35);animation:popIn .25s cubic-bezier(.34,1.56,.64,1);padding:28px;text-align:center">
+              <div style="width:56px;height:56px;border-radius:50%;background:#fbeeec;color:#e63946;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px">&#9888;</div>
+              <div style="font-size:16px;font-weight:800;color:#161616">Hapus data ini?</div>
+              <div style="font-size:13px;color:#8a8a8a;margin-top:8px">"{{ masterDeleteLabel }}" akan dihapus permanen dan tidak dapat dikembalikan.</div>
+              <div style="display:flex;gap:10px;justify-content:center;margin-top:22px">
+                <div onClick="{{ closeMasterDelete }}" style="padding:10px 22px;border-radius:10px;font-size:13px;font-weight:700;color:#5a5a5a;background:#f2f2f2;cursor:pointer">Batal</div>
+                <div onClick="{{ closeMasterDelete }}" style="padding:10px 22px;border-radius:10px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg, #ef8790, #cc4148);cursor:pointer;transition:transform .2s ease" style-hover="transform:translateY(-2px)">Hapus</div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
       </div>
     </sc-if>
 
     <!-- UPLOAD PAGE -->
     <sc-if value="{{ isUpload }}" hint-placeholder-val="{{ false }}">
       <div style="background:#fff;border-radius:16px;padding:26px 28px;box-shadow:0 4px 16px rgba(0,0,0,0.05);animation:fadeUp .3s ease">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px">
-          <div>
-            <div style="font-size:19px;font-weight:800;color:#0a0a0a">Data Spread Sheet &amp; History Upload</div>
-            <div style="font-size:13px;color:#8a8a8a;margin-top:4px">Upload aktif (pending, approved, rejected) — arsip ada di tab Data History Upload</div>
-          </div>
-          <div style="position:relative">
-            <div onClick="{{ toggleFilter }}" style="display:flex;align-items:center;gap:8px;border:1px solid #e2e2e2;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;color:#5a5a5a;cursor:pointer;transition:background .2s ease" style-hover="background:#f7f7f7">▼ Filter</div>
-            <sc-if value="{{ showFilter }}" hint-placeholder-val="{{ false }}">
-              <div onClick="{{ toggleFilter }}" style="position:fixed;inset:0;z-index:55"></div>
-              <div style="position:absolute;top:48px;right:0;width:280px;background:#fff;border-radius:16px;box-shadow:0 24px 48px rgba(0,0,0,0.18);padding:20px;z-index:60;animation:popIn .2s cubic-bezier(.34,1.56,.64,1);transform-origin:top right;text-align:left">
-                <div style="display:flex;flex-direction:column;gap:14px">
-                  <div>
-                    <div style="font-size:11px;font-weight:700;color:#8a8a8a;margin-bottom:6px">Unit Kerja</div>
-                    <select style="width:100%;border:1px solid #e2e2e2;border-radius:8px;padding:9px 12px;font-size:13px;color:#161616;box-sizing:border-box"><option>Semua Unit Kerja</option></select>
-                  </div>
-                  <div>
-                    <div style="font-size:11px;font-weight:700;color:#8a8a8a;margin-bottom:6px">Periode</div>
-                    <select style="width:100%;border:1px solid #e2e2e2;border-radius:8px;padding:9px 12px;font-size:13px;color:#161616;box-sizing:border-box"><option>Agustus 2026</option></select>
-                  </div>
-                  <div>
-                    <div style="font-size:11px;font-weight:700;color:#8a8a8a;margin-bottom:6px">Status</div>
-                    <select style="width:100%;border:1px solid #e2e2e2;border-radius:8px;padding:9px 12px;font-size:13px;color:#161616;box-sizing:border-box"><option>Semua Status</option></select>
-                  </div>
-                  <div onClick="{{ toggleFilter }}" style="text-align:center;padding:11px;border-radius:10px;background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:filter .2s ease" style-hover="filter:brightness(1.08)">Terapkan</div>
-                </div>
-              </div>
-            </sc-if>
-          </div>
+        <div style="margin-bottom:20px">
+          <div style="font-size:19px;font-weight:800;color:#0a0a0a">Data Spread Sheet &amp; History Upload</div>
+          <div style="font-size:13px;color:#8a8a8a;margin-top:4px">Upload aktif (pending, approved, rejected) — arsip ada di tab Data History Upload</div>
         </div>
 
-        <div style="display:flex;gap:8px;margin-bottom:20px">
-          <div onClick="{{ setTabSpreadSheet }}" style="padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:{{ tabSpreadBg }};color:{{ tabSpreadColor }};transition:background .2s ease">Data Spread Sheet</div>
-          <div onClick="{{ setTabHistory }}" style="padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:{{ tabHistoryBg }};color:{{ tabHistoryColor }};transition:background .2s ease">Data History Upload</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:20px">
+          <div style="background:#ececec;border:1px solid #dcdcdc;border-radius:22px;padding:6px;display:flex;gap:6px">
+            <div onClick="{{ setTabSpreadSheet }}" style="padding:10px 20px;border-radius:16px;font-size:13px;font-weight:700;cursor:pointer;background:{{ tabSpreadBg }};color:{{ tabSpreadColor }};transition:background .2s ease,color .2s ease,transform .2s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;transform:translateY(-2px)">Data Spread Sheet</div>
+            <div onClick="{{ setTabHistory }}" style="padding:10px 20px;border-radius:16px;font-size:13px;font-weight:700;cursor:pointer;background:{{ tabHistoryBg }};color:{{ tabHistoryColor }};transition:background .2s ease,color .2s ease,transform .2s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;transform:translateY(-2px)">Data History Upload</div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="position:relative;display:flex;align-items:center">
+              <input value="{{ uploadSearch }}" onInput="{{ onUploadSearchChange }}" placeholder="Cari nama, email, atau label periode..." class="rjpp-search-input" style="width:280px;border:1px solid #e6d3d1;background:#fff;border-radius:20px;padding:11px 16px 11px 42px;font-size:13px;color:#161616;box-shadow:0 4px 14px rgba(176,36,39,0.06);transition:box-shadow .2s ease,width .2s ease,border-color .2s ease">
+              <span style="position:absolute;left:8px;color:#fff;pointer-events:none;transition:transform .2s ease;background:linear-gradient(135deg, #ef8790, #cc4148);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px" class="rjpp-search-icon">&#128269;</span>
+            </div>
+            <div style="position:relative">
+              <div onClick="{{ toggleFilter }}" style="display:flex;align-items:center;gap:8px;border:1px solid #e2e2e2;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;color:#5a5a5a;cursor:pointer;transition:background .2s ease" style-hover="background:#f7f7f7">▼ Filter</div>
+              <sc-if value="{{ showFilter }}" hint-placeholder-val="{{ false }}">
+                <div onClick="{{ toggleFilter }}" style="position:fixed;inset:0;z-index:55"></div>
+                <div style="position:absolute;top:48px;right:0;width:280px;background:#fff;border-radius:16px;box-shadow:0 24px 48px rgba(0,0,0,0.18);padding:20px;z-index:60;animation:popIn .2s cubic-bezier(.34,1.56,.64,1);transform-origin:top right;text-align:left">
+                  <div style="display:flex;flex-direction:column;gap:14px">
+                    <div>
+                      <div style="font-size:11px;font-weight:700;color:#8a8a8a;margin-bottom:6px">Unit Kerja</div>
+                      <select style="width:100%;border:1px solid #e2e2e2;border-radius:8px;padding:9px 12px;font-size:13px;color:#161616;box-sizing:border-box"><option>Semua Unit Kerja</option></select>
+                    </div>
+                    <div>
+                      <div style="font-size:11px;font-weight:700;color:#8a8a8a;margin-bottom:6px">Periode</div>
+                      <select style="width:100%;border:1px solid #e2e2e2;border-radius:8px;padding:9px 12px;font-size:13px;color:#161616;box-sizing:border-box"><option>Agustus 2026</option></select>
+                    </div>
+                    <div>
+                      <div style="font-size:11px;font-weight:700;color:#8a8a8a;margin-bottom:6px">Status</div>
+                      <select style="width:100%;border:1px solid #e2e2e2;border-radius:8px;padding:9px 12px;font-size:13px;color:#161616;box-sizing:border-box"><option>Semua Status</option></select>
+                    </div>
+                    <div onClick="{{ toggleFilter }}" style="text-align:center;padding:11px;border-radius:10px;background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:filter .2s ease" style-hover="filter:brightness(1.08)">Terapkan</div>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
         </div>
 
         <div class="rjpp-kpi-scroll" style="overflow-x:auto">
-          <div class="rjpp-kpi-row rjpp-upload-row" style="display:grid;grid-template-columns:1.1fr 0.9fr 2.2fr 0.9fr 1.2fr 1.2fr 1fr 0.8fr;background:linear-gradient(135deg, #f0d3d1, #e9bcb5);border-radius:999px;padding:14px 20px;font-size:11px;font-weight:700;color:#8a2224;text-transform:uppercase;letter-spacing:0.03em">
+          <div class="rjpp-kpi-row rjpp-upload-row" style="display:grid;grid-template-columns:1.1fr 0.9fr 2.2fr 0.9fr 1.2fr 1.2fr 1fr 0.8fr;gap:12px;background:linear-gradient(135deg, #f0d3d1, #e9bcb5);border-radius:999px;padding:14px 20px;font-size:11px;font-weight:700;color:#8a2224;text-transform:uppercase;letter-spacing:0.03em">
             <div>Unit Kerja</div><div>Periode</div><div>Nama File</div><div style="text-align:right">Baris Data</div><div>Drafter</div><div>Timestamp</div><div>Status</div><div></div>
           </div>
 
           <sc-for list="{{ uploadRows }}" as="r" hint-placeholder-count="9">
-            <div onClick="{{ r.onClick }}" class="rjpp-kpi-row rjpp-upload-row" style="display:grid;grid-template-columns:1.1fr 0.9fr 2.2fr 0.9fr 1.2fr 1.2fr 1fr 0.8fr;padding:16px 20px;border-radius:14px;background:{{ r.bg }};box-shadow:{{ r.shadow }};font-size:13px;align-items:center;cursor:pointer;transition:background .15s ease,box-shadow .15s ease" style-hover="background:#f5f5f5">
+            <div onClick="{{ r.onClick }}" class="rjpp-kpi-row rjpp-upload-row" style="display:grid;grid-template-columns:1.1fr 0.9fr 2.2fr 0.9fr 1.2fr 1.2fr 1fr 0.8fr;gap:12px;padding:16px 20px;border-radius:14px;background:{{ r.bg }};box-shadow:{{ r.shadow }};font-size:13px;align-items:center;cursor:pointer;transition:background .15s ease,box-shadow .15s ease" style-hover="background:#f5f5f5">
               <div style="display:flex;align-items:center;gap:7px;font-weight:700;color:#161616"><div style="width:7px;height:7px;border-radius:50%;background:#2e9e5b"></div>{{ r.unit }}</div>
               <div style="color:#5a5a5a">{{ r.periode }}</div>
               <div style="color:#5a5a5a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:12px">{{ r.file }}</div>
@@ -289,64 +726,111 @@
 
         <sc-if value="{{ detailRow }}" hint-placeholder-val="{{ false }}">
           <div onClick="{{ closeDetail }}" style="position:fixed;inset:0;background:rgba(20,10,10,0.5);z-index:80;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeUp .15s ease">
-            <div onClick="{{ stopClick }}" style="background:#fff;border-radius:20px;width:680px;max-width:100%;box-shadow:0 30px 70px rgba(0,0,0,0.35);overflow:hidden;animation:popIn .25s cubic-bezier(.34,1.56,.64,1)">
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #f0f0f0">
-                <div style="display:flex;align-items:center;gap:14px">
-                  <div style="width:44px;height:44px;border-radius:12px;background:#b02427;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px">&#128065;</div>
-                  <div style="font-size:17px;font-weight:800;color:#161616">Detail Data &mdash; {{ detailRow.unit }}</div>
+            <div onClick="{{ stopClick }}" style="background:#f5f5f5;border-radius:24px;width:900px;max-width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 30px 70px rgba(0,0,0,0.4);animation:popIn .25s cubic-bezier(.34,1.56,.64,1)">
+
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:24px 28px;background:#fff">
+                <div style="display:flex;align-items:center;gap:16px">
+                  <div style="width:52px;height:52px;border-radius:16px;background:#b02427;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;flex:none">&#128196;</div>
+                  <div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                      <div style="font-size:19px;font-weight:800;color:#161616">Detail Data &mdash; {{ detailRow.unit }}</div>
+                      <span style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;background:#fbeeec;color:#b02427">NO. RESI: {{ detailRow.resi }}</span>
+                    </div>
+                    <div style="font-size:12px;color:#9a9a9a;margin-top:4px">Sistem Monitoring &amp; Courier Workflow Approval RKAP/RJPP Adhi Karya</div>
+                  </div>
                 </div>
-                <div onClick="{{ closeDetail }}" style="font-size:20px;color:#9a9a9a;cursor:pointer;padding:4px">&#10005;</div>
+                <div style="display:flex;align-items:center;gap:10px;flex:none">
+                  <div style="display:flex;align-items:center;gap:8px;border:1px solid #e2e2e2;border-radius:10px;padding:9px 16px;font-size:12px;font-weight:700;color:#5a5a5a;cursor:pointer;white-space:nowrap">&#8615; Export Audit Log</div>
+                  <div onClick="{{ closeDetail }}" style="width:34px;height:34px;border-radius:50%;background:#f2f2f2;display:flex;align-items:center;justify-content:center;font-size:16px;color:#5a5a5a;cursor:pointer;flex:none">&#10005;</div>
+                </div>
               </div>
 
-              <div style="padding:24px">
-                <div style="background:#faf6f2;border-radius:16px;padding:24px;display:grid;grid-template-columns:1.3fr 1fr;gap:20px">
-                  <div>
-                    <div style="font-size:15px;font-weight:800;color:#161616;line-height:1.4">{{ detailRow.file }}</div>
-                    <div style="display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;background:#1f7a4c;color:#fff">&#9200;&#65038; {{ detailRow.status }}</div>
-                    <div style="font-size:12px;color:#9a9a9a;margin-top:8px">{{ detailRow.periode }}</div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:22px">
-                      <div>
-                        <div style="font-size:10px;font-weight:700;color:#9a9a9a;text-transform:uppercase">Baris Data</div>
-                        <div style="font-size:14px;font-weight:700;color:#161616;margin-top:4px">{{ detailRow.baris }}</div>
+              <div style="padding:0 28px">
+                <div style="background:#141414;border-radius:18px;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:20px">
+                  <div style="display:flex;align-items:center;gap:18px">
+                    <div style="width:48px;height:48px;border-radius:14px;background:rgba(31,122,76,0.25);color:#3fcf8e;display:flex;align-items:center;justify-content:center;font-size:22px;flex:none">&#128737;&#65038;</div>
+                    <div>
+                      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+                        <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px;background:rgba(63,207,142,0.15);color:#3fcf8e"><span style="width:6px;height:6px;border-radius:50%;background:#3fcf8e"></span>Status Berkas: {{ detailRow.status }}</span>
+                        <span style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;background:rgba(255,255,255,0.08);color:#c9c9c9">Periode: {{ detailRow.periode }}</span>
                       </div>
-                      <div>
-                        <div style="font-size:10px;font-weight:700;color:#9a9a9a;text-transform:uppercase">Drafter</div>
-                        <div style="font-size:14px;font-weight:700;color:#161616;margin-top:4px">{{ detailRow.drafter }}</div>
-                      </div>
-                      <div>
-                        <div style="font-size:10px;font-weight:700;color:#9a9a9a;text-transform:uppercase">Timestamp</div>
-                        <div class="mono" style="font-size:12px;font-weight:700;color:#161616;margin-top:4px">{{ detailRow.timestamp }}</div>
-                      </div>
+                      <div style="font-size:19px;font-weight:800;color:#fff">{{ detailRow.file }}</div>
+                      <div style="font-size:12px;color:#8a8a8a;margin-top:6px">Diunggah: {{ detailRow.timestamp }} &nbsp;&middot;&nbsp; Ukuran File: {{ detailRow.fileSize }} &nbsp;&middot;&nbsp; Format: OpenXML Spreadsheet</div>
                     </div>
                   </div>
-
-                  <div>
-                    <div style="font-size:11px;font-weight:700;color:#9a9a9a;text-align:center;margin-bottom:16px">Workflow Approval Data</div>
-                    <div style="display:flex;align-items:center;justify-content:center;gap:10px">
-                      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
-                        <div style="width:52px;height:52px;border-radius:50%;border:2px solid #3b82f6;color:#3b82f6;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">{{ detailRow.drafterInitial }}</div>
-                        <div style="font-size:10px;font-weight:700;color:#9a9a9a;text-transform:uppercase">Drafter</div>
-                        <div style="font-size:12px;font-weight:700;color:#161616;text-align:center">{{ detailRow.drafter }}</div>
-                        <div class="mono" style="font-size:10px;color:#9a9a9a">{{ detailRow.timestamp }}</div>
-                      </div>
-                      <div style="display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:34px">
-                        <div style="color:#c4c4c4;font-size:16px">&rarr;</div>
-                        <div style="font-size:10px;font-weight:700;color:#1f7a4c">disetujui</div>
-                      </div>
-                      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
-                        <div style="width:52px;height:52px;border-radius:50%;border:2px solid #1f7a4c;color:#1f7a4c;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">{{ detailRow.approverInitial }}</div>
-                        <div style="font-size:10px;font-weight:700;color:#9a9a9a;text-transform:uppercase">Approver</div>
-                        <div style="font-size:12px;font-weight:700;color:#161616;text-align:center">{{ detailRow.approver }}</div>
-                        <div class="mono" style="font-size:10px;color:#9a9a9a">{{ detailRow.approveTimestamp }}</div>
-                      </div>
+                  <div style="display:flex;gap:24px;flex:none">
+                    <div>
+                      <div style="font-size:10px;font-weight:700;color:#8a8a8a;text-transform:uppercase;letter-spacing:0.04em">Total Baris Data</div>
+                      <div style="font-size:22px;font-weight:800;color:#fff;margin-top:4px">{{ detailRow.baris }} <span style="font-size:11px;font-weight:600;color:#8a8a8a">rows</span></div>
+                    </div>
+                    <div>
+                      <div style="font-size:10px;font-weight:700;color:#8a8a8a;text-transform:uppercase;letter-spacing:0.04em">Durasi Approval</div>
+                      <div style="font-size:22px;font-weight:800;color:#3fcf8e;margin-top:4px">{{ detailRow.durasi }}</div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-top:1px solid #f0f0f0">
-                <div style="font-size:12px;color:#9a9a9a">Angka dalam Juta Rupiah</div>
-                <div style="font-size:13px;font-weight:700;color:#b02427;cursor:pointer">Lihat Detail Lengkap &rarr;</div>
+              <div style="padding:24px 28px">
+                <div style="background:#fff;border-radius:18px;padding:24px">
+                  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+                    <div>
+                      <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:#b02427;text-transform:uppercase;letter-spacing:0.03em">&#9889; Lacak Perjalanan Berkas (Courier Workflow Tracking)</div>
+                      <div style="font-size:12px;color:#8a8a8a;margin-top:4px">Pantau alur dari pengunggahan draf awal hingga persetujuan final FINA</div>
+                    </div>
+                  </div>
+
+                  <div style="display:flex;align-items:flex-start;justify-content:center;gap:0;margin-top:44px;padding:0 40px">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1">
+                      <div style="width:60px;height:60px;border-radius:16px;background:#1f7a4c;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px">&#8593;</div>
+                      <span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:#e3f5ea;color:#1f7a4c">STEP 1 &middot; DRAFT IN</span>
+                      <div style="font-size:14px;font-weight:800;color:#161616;text-align:center">Drafter Input</div>
+                      <div style="font-size:13px;font-weight:600;color:#161616">{{ detailRow.drafter }}</div>
+                      <div class="mono" style="font-size:11px;color:#9a9a9a">{{ detailRow.timestamp }}</div>
+                    </div>
+                    <div style="width:100px;height:3px;background:#1f7a4c;margin-top:30px;flex:none"></div>
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1">
+                      <div style="width:60px;height:60px;border-radius:16px;background:#1f7a4c;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px">&#10003;</div>
+                      <span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:#e3f5ea;color:#1f7a4c">STEP 2 &middot; APPROVED</span>
+                      <div style="font-size:14px;font-weight:800;color:#161616;text-align:center">Persetujuan VP</div>
+                      <div style="font-size:13px;font-weight:600;color:#161616">{{ detailRow.approver }}</div>
+                      <div class="mono" style="font-size:11px;color:#9a9a9a">{{ detailRow.approveTimestamp }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px">
+                  <div style="background:#fff;border-radius:16px;padding:20px 22px">
+                    <div style="font-size:11px;font-weight:700;color:#9a9a9a;text-transform:uppercase;letter-spacing:0.03em">Pengirim / Pembuat Draf (Drafter)</div>
+                    <div style="display:flex;align-items:center;gap:14px;margin-top:14px">
+                      <div style="width:48px;height:48px;border-radius:50%;background:#161616;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex:none">{{ detailRow.drafterInitial }}</div>
+                      <div>
+                        <div style="font-size:15px;font-weight:800;color:#161616">{{ detailRow.drafter }}</div>
+                        <div style="font-size:12px;color:#9a9a9a;margin-top:2px">{{ detailRow.drafterRole }}</div>
+                      </div>
+                    </div>
+                    <div style="display:inline-block;margin-top:14px;font-size:11px;font-weight:600;padding:6px 12px;border-radius:8px;background:#f2f2f2;color:#5a5a5a">Timestamp Input: {{ detailRow.timestamp }}</div>
+                  </div>
+                  <div style="background:#fff;border-radius:16px;padding:20px 22px">
+                    <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#1f7a4c;text-transform:uppercase;letter-spacing:0.03em">Penerima / Penyetuju (Approver) &#10003;&#65038;</div>
+                    <div style="display:flex;align-items:center;gap:14px;margin-top:14px">
+                      <div style="width:48px;height:48px;border-radius:50%;background:#1f7a4c;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex:none">{{ detailRow.approverInitial }}</div>
+                      <div>
+                        <div style="font-size:15px;font-weight:800;color:#161616">{{ detailRow.approver }}</div>
+                        <div style="font-size:12px;color:#9a9a9a;margin-top:2px">{{ detailRow.approverRole }}</div>
+                      </div>
+                    </div>
+                    <div style="display:inline-block;margin-top:14px;font-size:11px;font-weight:600;padding:6px 12px;border-radius:8px;background:#e3f5ea;color:#1f7a4c">Disetujui: {{ detailRow.approveTimestamp }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:#fff;flex-wrap:wrap;gap:12px">
+                <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#9a9a9a"><span style="width:7px;height:7px;border-radius:50%;background:#b02427"></span>Skala Nominal: <span style="font-weight:700;color:#161616">Dalam Juta Rupiah (IDR)</span></div>
+                <div style="display:flex;gap:10px">
+                  <div style="display:flex;align-items:center;gap:8px;border:1px solid #e2e2e2;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;color:#5a5a5a;cursor:pointer">&#8615; Download File</div>
+                  <div style="display:flex;align-items:center;gap:8px;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg, #ef8790, #cc4148);cursor:pointer;transition:filter .2s ease" style-hover="filter:brightness(1.08)">Lihat Detail Lengkap &rarr;</div>
+                </div>
               </div>
             </div>
           </div>
@@ -362,7 +846,62 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { hoverIcon: null, page: 'home', uploadTab: 'sheet', selectedKpiRow: null, showProfile: false, showNotif: false, showFilter: false, selectedUploadRow: null, detailRowIndex: null };
+  state = { hoverIcon: null, page: 'home', uploadTab: 'sheet', selectedKpiRow: null, showProfile: false, showNotif: false, showFilter: false, selectedUploadRow: null, detailRowIndex: null, scenario: 'semua', userTab: 'kelola', searchQuery: '', masterTab: 'macro', masterEditIndex: null, masterDeleteIndex: null, laporanTab: 'rjpp', uploadSearch: '', laporanSearch: '' };
+
+  masterData = {
+    macro: { years: ['2026','2027','2028','2029','2030'], rows: [
+      { label: 'Inflasi (%)', values: ['3,20','3,10','3,00','3,00','2,90'] },
+      { label: 'Suku Bunga BI (%)', values: ['5,75','5,50','5,25','5,00','5,00'] },
+      { label: 'Kurs USD/IDR', values: ['15.800','15.650','15.500','15.400','15.300'] },
+      { label: 'Pertumbuhan PDB (%)', values: ['5,10','5,20','5,20','5,30','5,30'] },
+    ]},
+    validasi: { years: ['Deskripsi','','','','Status'], rows: [
+      { label: 'VAL-001', values: ['Total Aset = Total Liabilitas + Ekuitas','','','','Aktif'] },
+      { label: 'VAL-002', values: ['Laba Kotor \u2264 Pendapatan','','','','Aktif'] },
+      { label: 'VAL-003', values: ['Kas/Bank tidak boleh negatif','','','','Aktif'] },
+      { label: 'VAL-004', values: ['Order Book \u2265 Kontrak Baru tahun berjalan','','','','Nonaktif'] },
+    ]},
+    nc: { years: ['2026','2027','2028','2029','2030'], rows: [
+      { label: 'Take Up Rate (%)', values: ['11,6','12,7','12,8','12,3','15,5'] },
+      { label: 'Margin NC (%)', values: ['8,4','7,9','8,1','8,6','8,3'] },
+      { label: 'Durasi Proyek (bulan)', values: ['18','20','22','20','24'] },
+      { label: 'Retensi (%)', values: ['5,0','5,0','5,0','5,0','5,0'] },
+    ]},
+  };
+
+  userData = [
+    { name: 'Aditya DN', email: 'aditya.dn@adhi.co.id', role: 'admin unit kerja', unit: 'Dept. E&I', tanggal: '05/08/2026' },
+    { name: 'Agung Wijayanto', email: 'agung.wijayanto@adhi.co.id', role: 'admin unit kerja', unit: 'Dept. INFRA 2', tanggal: '05/08/2026' },
+    { name: 'Agus Sudiat', email: 'agus.sudiat@adhi.co.id', role: 'admin unit kerja', unit: 'Dept. Gedung', tanggal: '05/08/2026' },
+    { name: 'Arief Kurniawah', email: 'arief.kurniawah@adhi.co.id', role: 'admin pusat', unit: '\u2013', tanggal: '05/08/2026' },
+    { name: 'Arief Kurniawan', email: 'arief.kurniawan@adhi.co.id', role: 'admin pusat', unit: '\u2013', tanggal: '05/08/2026', noHapus: true },
+    { name: 'Dery SG', email: 'dery.sg@adhi.co.id', role: 'admin unit kerja', unit: 'Dept. PKA', tanggal: '05/08/2026' },
+    { name: 'Dwi Fitriadi Soeprihadi', email: 'dwi.soeprihadi@adhi.co.id', role: 'manajemen unit kerja', unit: 'Dept. INFRA 1', tanggal: '05/08/2026' },
+    { name: 'Febria Sahrina', email: 'febria.sahrina@adhi.co.id', role: 'admin unit kerja', unit: 'PT APB', tanggal: '05/08/2026' },
+    { name: 'Iwan Sahputra', email: 'iwan.sahputra@adhi.co.id', role: 'admin unit kerja', unit: 'PT ADCP', tanggal: '05/08/2026' },
+    { name: 'M. Rafli Wahyudi Putra', email: 'muhammad.rafli@adhi.co.id', role: 'admin pusat', unit: '\u2013', tanggal: '14/08/2026' },
+    { name: 'Muhamad Sidik', email: 'muhamad.sidik@adhi.co.id', role: 'admin unit kerja', unit: 'Dept. INFRA 1', tanggal: '05/08/2026' },
+    { name: 'M. Zamroni', email: 'm.zamroni@adhi.co.id', role: 'manajemen pusat', unit: '\u2013', tanggal: '05/08/2026' },
+    { name: 'Noegroho', email: 'noegroho@adhi.co.id', role: 'manajemen pusat', unit: '\u2013', tanggal: '05/08/2026' },
+    { name: 'Randy Tria Fakhrozi', email: 'randy.tf@adhi.co.id', role: 'admin pusat', unit: '\u2013', tanggal: '14/08/2026' },
+    { name: 'Rivans AA', email: 'rivans.aa@adhi.co.id', role: 'admin unit kerja', unit: 'PT APP', tanggal: '05/08/2026' },
+    { name: 'Shiva Twinandilla', email: 'shiva.twinandilla@adhi.co.id', role: 'admin unit kerja', unit: 'PT APG', tanggal: '05/08/2026' },
+  ];
+
+  periodeData = [
+    { label: 'Agustus 2026', periode: '01/08 \u2013 31/08/2026', upload: '9', status: 'Aktif', kunci: 'Terbuka' },
+  ];
+
+  laporanData = [
+    { unit: 'Dept. E&I', lk: 'NERACA', kode: 'TOTAL ASET TDK LANCAR', subKode: 'Aset Lain', values: ['141.761','141.761','66.761','36.761','6.761','5.621','5.621','5.621','5.621'] },
+    { unit: 'Dept. E&I', lk: 'ARUS KAS', kode: 'INVESTASI', subKode: 'Divestasi Modal JO', values: ['29.552','29.552','75.000','30.000','30.000','1.139','0','0','0'] },
+    { unit: 'Dept. E&I', lk: 'NERACA', kode: 'TOTAL ASET LANCAR', subKode: 'Piutang Proyek PHO/FHO', values: ['328.211','328.211','203.073','153.073','103.073','59.753','59.753','59.753','59.753'] },
+    { unit: 'Dept. E&I', lk: 'ARUS KAS', kode: 'OPERASI', subKode: 'Termijn', values: ['637.543','637.543','3.277.563','3.234.596','4.647.612','5.917.851','4.371.722','6.585.926','9.310.602'] },
+    { unit: 'Dept. E&I', lk: 'ARUS KAS', kode: 'OPERASI', subKode: 'Retensi', values: ['-27.483','-27.483','-137.745','-108.537','-205.976','-292.900','-168.586','-44.296','-104.030'] },
+    { unit: 'Dept. E&I', lk: 'NERACA', kode: 'HUTANG LANCAR', subKode: 'Hutang Usaha', values: ['3.176.741','3.176.741','2.795.903','2.850.772','3.152.395','3.490.123','2.555.536','3.980.164','4.864.207'] },
+    { unit: 'Dept. E&I', lk: 'NERACA', kode: 'TOTAL ASET LANCAR', subKode: 'Kas/Bank', values: ['319.794','319.794','1.566.783','1.897.201','1.955.177','2.090.012','3.190.097','4.081.248','4.185.965'] },
+    { unit: 'Dept. E&I', lk: 'INCOME STATEMENT', kode: 'LABA KOTOR', subKode: 'Laba Proyek NC-NJO', values: ['122.951','122.951','233.200','358.873','512.121','642.565','406.947','790.018','1.040.145'] },
+  ];
 
   uploadData = [
     { unit: 'PT ADCP', periode: 'Agustus 2026', file: 'PT ADCP - RKAP 2027 dan RJPP 2027-2036 - 01082026.xlsx', baris: '0', drafter: 'Iwan Sahputra', timestamp: '05/08/2026 06:25', status: 'Disetujui' },
@@ -381,16 +920,25 @@ class Component extends DCLogic {
   renderVals() {
     const isHome = this.state.page === 'home';
     const isUpload = this.state.page === 'upload';
+    const isLaporan = this.state.page === 'laporan';
+    const isGrafik = this.state.page === 'grafik';
+    const isFinance = this.state.page === 'finance';
+    const isUserMgmt = this.state.page === 'usermgmt';
+    const isMasterData = this.state.page === 'masterdata';
 
     const railBase = [
       { glyph: '\u2302', flyoutTitle: null, flyoutItems: [], page: 'home' },
       { glyph: '\u2191', flyoutTitle: null, flyoutItems: [], page: 'upload' },
-      { glyph: '\u2630', flyoutTitle: 'LAPORAN', flyoutItems: ['RJPP', 'RKAP', 'Graphic / KPI', 'Finance'], page: null },
-      { glyph: '\u2699', flyoutTitle: null, flyoutItems: [], page: null },
-      { glyph: '\u25CE', flyoutTitle: null, flyoutItems: [], page: null },
+      { glyph: '\u2630', flyoutTitle: 'LAPORAN', flyoutItems: [
+        { label: 'RJPP & RKAP', page: 'laporan' },
+        { label: 'Grafic KPI', page: 'grafik' },
+        { label: 'Finance', page: 'finance' },
+      ], page: null },
+      { glyph: '\u2699', flyoutTitle: null, flyoutItems: [], page: 'masterdata' },
+      { glyph: '\u25CE', flyoutTitle: null, flyoutItems: [], page: 'usermgmt' },
     ];
     const railIcons = railBase.map((ic, i) => {
-      const active = ic.page && this.state.page === ic.page;
+      const active = (ic.page && this.state.page === ic.page) || ic.flyoutItems.some(f => f.page === this.state.page);
       return {
         glyph: ic.glyph,
         bg: active ? '#9e1616' : 'transparent',
@@ -402,7 +950,7 @@ class Component extends DCLogic {
         onLeave: () => this.setState({ hoverIcon: null }),
         showFlyout: this.state.hoverIcon === i && ic.flyoutItems.length > 0,
         flyoutTitle: ic.flyoutTitle,
-        flyoutItems: ic.flyoutItems,
+        flyoutItems: ic.flyoutItems.map(f => ({ label: f.label, onClick: f.page ? () => this.goPage(f.page) : () => {} })),
       };
     });
 
@@ -441,6 +989,7 @@ class Component extends DCLogic {
       year: b.year,
       h: (b.pct * 1.8) + 'px',
       color: i === peakIndex ? '#b02427' : '#d9685f',
+      delay: (i * 0.06) + 's',
     }));
     const peakLeftPct = (((peakIndex + 0.5) / trendRaw.length) * 100) + '%';
     const peakLabel = trendRaw[peakIndex].year;
@@ -455,9 +1004,209 @@ class Component extends DCLogic {
 
     const sheetActive = this.state.uploadTab === 'sheet';
 
+    const scenarioOptions = [
+      { key: 'semua', label: 'Semua' },
+      { key: 'worst', label: 'Worst (A+B)' },
+      { key: 'moderate', label: 'Moderate (A+B+C)' },
+      { key: 'best', label: 'Best (A+B+C+D)' },
+    ];
+    const scenarioTabs = scenarioOptions.map(opt => {
+      const active = this.state.scenario === opt.key;
+      return {
+        label: opt.label,
+        onClick: () => this.setState({ scenario: opt.key }),
+        bg: active ? 'rgba(255,255,255,0.42)' : 'rgba(255,255,255,0.14)',
+        color: '#fff',
+      };
+    });
+    const laporanYears = ['RKAP 2026','TH.2026','TH.2027','TH.2028','TH.2029','TH.2030','TH.2031','TH.2032','TH.2033'];
+    const lq = (this.state.laporanSearch || '').toLowerCase().trim();
+    const laporanRows = this.laporanData
+      .filter(row => !lq || row.unit.toLowerCase().includes(lq) || row.kode.toLowerCase().includes(lq) || row.subKode.toLowerCase().includes(lq))
+      .map((row, i) => {
+      const selected = this.state.selectedKpiRow === ('lap' + i);
+      return {
+        ...row,
+        onClick: () => this.setState({ selectedKpiRow: selected ? null : ('lap' + i) }),
+        bg: selected ? '#ffffff' : (i % 2 === 1 ? '#fafafa' : 'transparent'),
+        shadow: selected ? '0 6px 18px rgba(0,0,0,0.10)' : 'none',
+        values: row.values.map((v, j) => ({
+          text: v,
+          color: j === 1 ? '#b02427' : (v.startsWith('-') ? '#8a8a8a' : '#5a5a5a'),
+          weight: j === 1 ? '700' : '500',
+        })),
+      };
+    });
+
+    const grafikCards = [
+      { label: 'Pendapatan', value: '23.759.673', icon: '$' },
+      { label: 'Kontrak Baru', value: '37.071.351', icon: '\u2261' },
+      { label: 'Laba Bersih', value: '2.159.080', icon: '\u2197' },
+      { label: 'Total Aset', value: '24.598.489', icon: '\u25A4' },
+    ].map((c, i) => ({
+      ...c,
+      bg: ['linear-gradient(135deg, #d98588, #a94547)', 'linear-gradient(135deg, #ef8790, #cc4148)', 'linear-gradient(135deg, #eaa89f, #d97463)', 'linear-gradient(135deg, #c9575a, #8f1f1c)'][i],
+    }));
+
+    const salesRaw = [
+      { year: '2017', excl: 62, elim: 30 }, { year: '2018', excl: 68, elim: 34 }, { year: '2019', excl: 74, elim: 40 },
+      { year: '2020', excl: 46, elim: 24 }, { year: '2021', excl: 84, elim: 46 }, { year: '2022', excl: 44, elim: 22 },
+      { year: '2023', excl: 78, elim: 38 }, { year: '2024', excl: 58, elim: 30 }, { year: '2025', excl: 32, elim: 44 },
+      { year: '2026', excl: 20, elim: 10 }, { year: '2027', excl: 18, elim: 9 }, { year: '2028', excl: 16, elim: 8 },
+      { year: '2029', excl: 20, elim: 10 }, { year: '2030', excl: 24, elim: 12 }, { year: '2031', excl: 22, elim: 11 },
+      { year: '2032', excl: 26, elim: 13 }, { year: '2033', excl: 28, elim: 14 }, { year: '2034', excl: 26, elim: 13 },
+      { year: '2035', excl: 28, elim: 14 },
+    ];
+    let gPeak = 0;
+    salesRaw.forEach((b, i) => { if ((b.excl + b.elim) > (salesRaw[gPeak].excl + salesRaw[gPeak].elim)) gPeak = i; });
+    const grafikBars = salesRaw.map((b, i) => ({
+      year: b.year,
+      exclH: (b.excl * 3) + 'px',
+      elimH: (b.elim * 3) + 'px',
+      color: i === gPeak ? '#b02427' : '#a94547',
+      delay: (i * 0.04) + 's',
+    }));
+    const grafikPeakLeftPct = (((gPeak + 0.5) / salesRaw.length) * 100) + '%';
+    const grafikPeakLabel = salesRaw[gPeak].year;
+
+    const grafikKpiYears = ['2026','2027','2028','2029','2030','2031','2032','2033','2034'];
+    const grafikKpiData = [
+      { label: 'Pendapatan (SALES)', values: ['23.759.673','19.881.959','17.195.015','24.198.576','26.888.755','25.974.713','31.476.907','34.271.339','33.307.421'] },
+      { label: 'New Contract', values: ['37.071.351','41.364.150','45.203.693','44.784.841','49.268.410','48.345.461','56.745.275','52.550.347','55.210.688'] },
+      { label: 'Order Book', values: ['43.531.506','49.298.258','63.885.025','72.002.420','74.011.381','88.213.416','94.004.688','94.087.874','96.808.425'] },
+      { label: 'Laba Kotor', values: ['1.713.931','1.159.703','1.296.389','1.883.713','2.178.538','1.908.424','2.272.815','2.451.645','2.482.294'] },
+      { label: 'EBITDA', values: ['2.701.875','1.682.855','1.812.951','2.785.318','3.239.127','2.874.206','3.343.754','3.298.956','3.102.175'] },
+      { label: 'Laba Bersih (EAT)', values: ['2.159.080','174.711','341.658','625.346','809.985','598.203','692.110','614.988','569.244'] },
+      { label: 'Total Aset', values: ['24.598.489','17.151.890','16.264.499','19.285.958','23.463.140','25.881.437','29.544.521','31.794.730','33.950.884'] },
+    ];
+    const grafikKpiRows = grafikKpiData.map((row, i) => {
+      const selected = this.state.selectedKpiRow === ('graf' + i);
+      return {
+        ...row,
+        onClick: () => this.setState({ selectedKpiRow: selected ? null : ('graf' + i) }),
+        bg: selected ? '#ffffff' : (i % 2 === 1 ? '#fafafa' : 'transparent'),
+        shadow: selected ? '0 6px 18px rgba(0,0,0,0.10)' : 'none',
+        values: row.values.map(v => ({ text: v, color: '#5a5a5a' })),
+      };
+    });
+
+    const financeYears = ['2026','2027','2028','2029','2030','2031','2032','2033','2034'];
+    const ratioData = [
+      { label: 'GPM (%)', values: ['14,74','10,90','11,51','11,01','10,88','10,86','10,15','9,91','9,93'] },
+      { label: 'NPM (%)', values: ['16,26','1,42','2,62','3,15','3,49','2,92','2,66','2,20','2,09'] },
+      { label: 'ROA (%)', values: ['7,69','0,88','1,81','2,79','2,98','1,99','2,02','1,71','1,54'] },
+      { label: 'ROE (%)', values: ['0,00','35,70','11,95','9,60','7,44','3,98','3,52','2,59','2,10'] },
+      { label: 'DER (x)', values: ['0,00','27,53','3,92','2,04','1,35','1,02','0,92','0,80','0,69'] },
+      { label: 'EBITDA Margin (%)', values: ['23,24','15,81','16,09','16,27','16,18','16,35','14,93','13,34','12,41'] },
+    ];
+    const ratioRows = ratioData.map((row, i) => ({
+      ...row,
+      bg: i % 2 === 1 ? '#fafafa' : 'transparent',
+      values: row.values.map(v => ({ text: v, color: '#b02427' })),
+    }));
+
+    const incomeData = [
+      { kode: 'BIAYA USAHA', sub: 'Biaya D&A', values: ['-32.720','-5.156','-5.156','0','0','0','0','0','0'] },
+      { kode: 'BUNGA BANK', sub: 'B.Bank non CPF', values: ['-422.621','-440.204','-221.817','-170.266','-173.970','-216.311','-234.431','-233.748','-218.072'] },
+      { kode: 'NEW CONTRACT', sub: 'New Contract-PROPERTY', values: ['161.164','87.567','95.840','113.397','163.973','165.596','228.672','268.391','259.592'] },
+      { kode: 'SALES', sub: 'Sales PROPERTY', values: ['150.691','124.228','141.378','182.177','163.145','194.677','237.908','295.357','256.032'] },
+      { kode: 'HPP', sub: 'HPP Carry Over', values: ['-5.936.611','-2.645.456','484.715','440.019','426.937','426.640','426.640','426.640','426.640'] },
+      { kode: 'LABA KOTOR', sub: 'Laba Kotor PROPERTY', values: ['10.860','5.774','10.222','8.931','12.070','10.130','16.310','22.146','24.096'] },
+      { kode: 'TAX', sub: '-', values: ['-271.781','-230.008','-219.964','-311.517','-348.003','-276.056','-383.183','-438.278','-395.393'] },
+      { kode: 'LABA KOTOR', sub: 'Laba Proyek NC-NJO', values: ['884.124','600.840','968.299','1.445.553','1.758.505','1.640.931','2.131.080','2.390.037','2.413.650'] },
+    ];
+    const incomeRows = incomeData.map((row, i) => ({
+      ...row,
+      bg: i % 2 === 1 ? '#fdeceb' : 'transparent',
+      values: row.values.map(v => ({ text: v, color: v.startsWith('-') ? '#8a8a8a' : '#b02427' })),
+    }));
+
+    const roleColors = {
+      'admin unit kerja': { bg: '#fbdada', color: '#a94547' },
+      'admin pusat': { bg: '#efe2f5', color: '#7a4a9e' },
+      'manajemen unit kerja': { bg: '#fbe8d4', color: '#a5722a' },
+      'manajemen pusat': { bg: '#dce8fb', color: '#2f5fa8' },
+    };
+    const q = (this.state.searchQuery || '').toLowerCase().trim();
+    const userRows = this.userData
+      .filter(u => !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.unit.toLowerCase().includes(q))
+      .map((u, i) => {
+        const rc = roleColors[u.role] || { bg: '#f2f2f2', color: '#5a5a5a' };
+        return { ...u, roleBg: rc.bg, roleColor: rc.color, bg: i % 2 === 1 ? '#fafafa' : 'transparent', showHapus: !u.noHapus };
+      });
+    const userTabKelola = this.state.userTab === 'kelola';
+    const setUserTabKelola = () => this.setState({ userTab: 'kelola' });
+    const setUserTabPeriode = () => this.setState({ userTab: 'periode' });
+    const periodeRows = this.periodeData.filter(p => !q || p.label.toLowerCase().includes(q));
+
+    const masterTabDefs = [
+      { key: 'macro', label: 'Asumsi Macro', icon: '\u2699' },
+      { key: 'validasi', label: 'List Validasi', icon: '\u2713' },
+      { key: 'nc', label: 'Asumsi NC', icon: '\u2261' },
+    ];
+    const masterTabs = masterTabDefs.map(t => {
+      const active = this.state.masterTab === t.key;
+      return {
+        label: t.label,
+        icon: t.icon,
+        onClick: () => this.setState({ masterTab: t.key }),
+        bg: active ? 'linear-gradient(135deg, #ef8790, #cc4148)' : 'transparent',
+        color: active ? '#fff' : '#7a7a7a',
+        shadow: active ? '0 8px 18px rgba(0,0,0,0.18)' : 'none',
+      };
+    });
+    const masterKey = this.state.masterTab;
+    const masterActive = this.masterData[masterKey];
+    const masterActiveLabel = masterTabDefs.find(t => t.key === masterKey).label;
+    const isValidasiTab = masterKey === 'validasi';
+    const isMacroTab = masterKey === 'macro';
+    const masterDataRows = masterActive.rows.map((row, i) => {
+      const actions = [];
+      if (isMacroTab || isValidasiTab) actions.push({ label: 'Edit', color: '#b02427', onClick: () => this.setState({ masterEditIndex: i }) });
+      if (isValidasiTab) actions.push({ label: 'Hapus', color: '#e63946', onClick: () => this.setState({ masterDeleteIndex: i }) });
+      return {
+        ...row,
+        bg: i % 2 === 1 ? '#fafafa' : 'transparent',
+        values: row.values.map(v => ({ text: v, color: '#5a5a5a' })),
+        actions,
+      };
+    });
+    const masterEditIdx = this.state.masterEditIndex;
+    const masterEditRow = masterEditIdx === -1 ? { label: '', values: masterActive.years.map(() => '') } : (masterEditIdx !== null ? masterActive.rows[masterEditIdx] : null);
+    const masterEditFields = masterEditRow ? masterActive.years.map((y, j) => ({ label: y, value: masterEditRow.values[j] })).filter(f => f.label) : [];
+    const masterEditIsNew = masterEditIdx === -1;
+    const closeMasterEdit = () => this.setState({ masterEditIndex: null });
+    const closeMasterDelete = () => this.setState({ masterDeleteIndex: null });
+    const masterDeleteLabel = this.state.masterDeleteIndex !== null ? masterActive.rows[this.state.masterDeleteIndex].label : '';
+
     return {
-      isHome, isUpload,
-      pageSubtitle: isUpload ? 'Spread Sheet & History Upload' : 'Dashboard',
+      isHome, isUpload, isLaporan, isGrafik, isFinance, isUserMgmt, isMasterData,
+      pageSubtitle: isUpload ? 'Spread Sheet & History Upload' : (isLaporan ? 'Laporan RJPP & RKAP' : (isGrafik ? 'Grafic KPI' : (isFinance ? 'Finance' : (isUserMgmt ? 'User Management' : (isMasterData ? 'Master Data' : 'Dashboard'))))),
+      masterTabs, masterDataRows, masterActiveLabel, masterYears: masterActive.years, isValidasiTab,
+      masterEditRow, masterEditFields, masterEditTitle: masterEditIsNew ? 'Tambah Data' : 'Edit Data', closeMasterEdit,
+      masterDeleteLabel, showMasterDelete: this.state.masterDeleteIndex !== null, closeMasterDelete,
+      openMasterAdd: () => this.setState({ masterEditIndex: -1 }),
+      stopClick: (e) => e.stopPropagation(),
+      userRows, userTabKelola, isPeriodeTab: !userTabKelola, setUserTabKelola, setUserTabPeriode, periodeRows,
+      searchQuery: this.state.searchQuery,
+      onSearchChange: (e) => this.setState({ searchQuery: e.target.value }),
+      tabKelolaBg: userTabKelola ? 'linear-gradient(135deg, #ef8790, #cc4148)' : 'transparent',
+      tabKelolaColor: userTabKelola ? '#fff' : '#7a7a7a',
+      tabKelolaShadow: userTabKelola ? '0 8px 18px rgba(176,36,39,0.35)' : 'none',
+      tabPeriodeBg: !userTabKelola ? 'linear-gradient(135deg, #ef8790, #cc4148)' : 'transparent',
+      tabPeriodeColor: !userTabKelola ? '#fff' : '#7a7a7a',
+      tabPeriodeShadow: !userTabKelola ? '0 8px 18px rgba(176,36,39,0.35)' : 'none',
+      scenarioTabs, laporanYears, laporanRows,
+      setLaporanTabRjpp: () => this.setState({ laporanTab: 'rjpp' }),
+      setLaporanTabRkap: () => this.setState({ laporanTab: 'rkap' }),
+      laporanTabRjppBg: this.state.laporanTab === 'rjpp' ? 'linear-gradient(135deg, #ef8790, #cc4148)' : 'transparent',
+      laporanTabRjppColor: this.state.laporanTab === 'rjpp' ? '#fff' : '#7a7a7a',
+      laporanTabRkapBg: this.state.laporanTab === 'rkap' ? 'linear-gradient(135deg, #ef8790, #cc4148)' : 'transparent',
+      laporanTabRkapColor: this.state.laporanTab === 'rkap' ? '#fff' : '#7a7a7a',
+      laporanSearch: this.state.laporanSearch,
+      onLaporanSearchChange: (e) => this.setState({ laporanSearch: e.target.value }),
+      grafikCards, grafikBars, grafikPeakLeftPct, grafikPeakLabel, grafikKpiYears, grafikKpiRows,
+      ratioRows, incomeRows, financeYears,
       railIcons, statusCards, kpiYears, kpiRows, trendBars, recentUploads, peakLeftPct, peakLabel,
       pendingUnits: ['Departemen Infrastruktur I belum upload', 'Departemen Infrastruktur II belum upload'],
       showProfile: this.state.showProfile,
@@ -469,7 +1218,10 @@ class Component extends DCLogic {
         { title: 'Dept. Gedung', tag: 'Menunggu', tagBg: '#fbeeec', tagColor: '#b02427', desc: 'Menunggu approval dari Manajer Keuangan.' },
         { title: 'Reminder', tag: 'Info', tagBg: '#f2f2f2', tagColor: '#5a5a5a', desc: '2 unit kerja belum upload data periode Agustus 2026.' },
       ],
-      uploadRows: this.uploadData.map((r, i) => {
+      uploadRows: this.uploadData.filter(r => {
+        const uq = (this.state.uploadSearch || '').toLowerCase().trim();
+        return !uq || r.unit.toLowerCase().includes(uq) || r.file.toLowerCase().includes(uq) || r.drafter.toLowerCase().includes(uq);
+      }).map((r, i) => {
         const selected = this.state.selectedUploadRow === i;
         return {
           ...r,
@@ -481,21 +1233,28 @@ class Component extends DCLogic {
       }),
       showFilter: this.state.showFilter,
       toggleFilter: () => this.setState(s => ({ showFilter: !s.showFilter })),
+      uploadSearch: this.state.uploadSearch,
+      onUploadSearchChange: (e) => this.setState({ uploadSearch: e.target.value }),
       detailRow: this.state.detailRowIndex !== null ? {
         ...this.uploadData[this.state.detailRowIndex],
-        drafterInitial: this.uploadData[this.state.detailRowIndex].drafter.charAt(0),
+        resi: 'FIN-2026-0805',
+        fileSize: '4.8 MB',
+        durasi: '10 jam 49 mnt',
+        drafterInitial: this.uploadData[this.state.detailRowIndex].drafter.split(' ').map(w => w.charAt(0)).slice(0,2).join(''),
+        drafterRole: 'Tim Perencanaan ' + this.uploadData[this.state.detailRowIndex].unit,
         approver: 'Arief Kurniawan',
-        approverInitial: 'A',
-        approveTimestamp: '05/08/2026 15:03',
+        approverInitial: 'AK',
+        approverRole: 'VP Financial Modelling',
+        approveTimestamp: '05/08/2026 15:03 WIB',
       } : null,
       closeDetail: () => this.setState({ detailRowIndex: null }),
       stopClick: (e) => e.stopPropagation(),
       setTabSpreadSheet: () => this.setState({ uploadTab: 'sheet' }),
       setTabHistory: () => this.setState({ uploadTab: 'history' }),
-      tabSpreadBg: sheetActive ? '#9e1616' : 'transparent',
-      tabSpreadColor: sheetActive ? '#fff' : '#8a8a8a',
-      tabHistoryBg: sheetActive ? 'transparent' : '#9e1616',
-      tabHistoryColor: sheetActive ? '#8a8a8a' : '#fff',
+      tabSpreadBg: sheetActive ? 'linear-gradient(135deg, #ef8790, #cc4148)' : 'transparent',
+      tabSpreadColor: sheetActive ? '#fff' : '#7a7a7a',
+      tabHistoryBg: sheetActive ? 'transparent' : 'linear-gradient(135deg, #ef8790, #cc4148)',
+      tabHistoryColor: sheetActive ? '#7a7a7a' : '#fff',
     };
   }
 }
