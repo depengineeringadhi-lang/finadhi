@@ -9,9 +9,11 @@
 <x-dc>
 <helmet data-dc-atomics="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
-  body{margin:0;font-family:'Montserrat',system-ui,sans-serif;background:#f2f2f2}
+  html{overflow-x:hidden}
+  body{margin:0;font-family:'Poppins',system-ui,sans-serif;background:#f2f2f2;overflow-x:hidden}
+  *{box-sizing:border-box}
   a{color:#b02427}
   a:hover{color:#e63946}
   .mono{font-family:'JetBrains Mono',monospace}
@@ -23,6 +25,12 @@
   @keyframes growBar{from{transform:scaleY(0)}to{transform:scaleY(1)}}
   @keyframes fadeInPeak{from{opacity:0;transform:translate(-50%,-6px)}to{opacity:1;transform:translate(-50%,0)}}
   @keyframes bounceDown{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+  @keyframes drawLine{to{stroke-dashoffset:0}}
+  @keyframes ringSweep{from{opacity:0;transform:translate(-50%,50%) scale(.7)}to{opacity:1;transform:translate(-50%,50%) scale(1)}}
+  .rjpp-bar-wrap{position:relative}
+  .rjpp-bar-tip{opacity:0;transform:translate(-50%,6px) scale(.94);transition:opacity .18s ease,transform .18s ease;pointer-events:none}
+  .rjpp-bar-wrap:hover .rjpp-bar-tip{opacity:1;transform:translate(-50%,0) scale(1)}
+  .rjpp-bar-wrap:hover{z-index:60}
   @keyframes donutGrow{from{transform:scale(0.5) rotate(-120deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
   @keyframes donutGlow{0%,100%{filter:drop-shadow(0 0 0 rgba(176,36,39,0))}50%{filter:drop-shadow(0 0 16px rgba(176,36,39,0.45))}}
   .rjpp-donut-spin{animation:donutGlow 2.6s ease-in-out infinite}
@@ -31,7 +39,7 @@
   .rjpp-search-input:focus + .rjpp-search-icon, .rjpp-search-input:hover + .rjpp-search-icon{transform:scale(1.15)}
   @media (max-width: 1100px){
     .rjpp-shell{display:flex !important;flex-direction:column !important;padding:20px !important}
-    .rjpp-content{order:1 !important;padding-top:0 !important}
+    .rjpp-content{order:1 !important;padding-top:0 !important;width:100% !important}
     .rjpp-topbar-slot{position:static !important;left:auto !important;right:auto !important;top:auto !important}
     .rjpp-dock{position:static !important;order:2 !important;left:auto !important;right:auto !important;top:auto !important;transform:none !important;flex-direction:row !important;width:fit-content !important;margin:20px auto 0 auto !important;padding:10px 18px !important}
     .rjpp-two-col{grid-template-columns:1fr !important}
@@ -47,6 +55,19 @@
   @media (max-width: 640px){
     .rjpp-topbar-title{font-size:13px !important}
     .rjpp-topbar-sub{display:none !important}
+    .rjpp-filter-grid{grid-template-columns:1fr 1fr !important}
+    .rjpp-pie-grid{grid-template-columns:1fr !important}
+    .rjpp-search-wrap{width:100% !important}
+    .rjpp-search-input{width:100% !important}
+    .rjpp-search-input:focus{width:100% !important}
+    .rjpp-dock{max-width:100% !important;overflow-x:auto !important;justify-content:center !important}
+  }
+  @media (max-width: 480px){
+    .rjpp-shell{padding:14px !important}
+    .rjpp-topbar{padding:10px 16px !important;border-radius:22px !important}
+    .rjpp-topbar-slot{top:16px !important}
+    .rjpp-content{gap:14px !important;padding-top:88px !important}
+    .rjpp-dock{border-radius:22px !important;padding:8px 12px !important;gap:6px !important}
   }
 </style>
 </helmet>
@@ -79,7 +100,7 @@
     <div class="rjpp-topbar-slot" style="position:fixed;top:28px;left:118px;right:32px;z-index:30;display:flex;justify-content:center;pointer-events:none">
     <div class="rjpp-topbar" style="width:100%;max-width:1440px;background:rgba(255,255,255,0.72);backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,0.5);border-radius:32px;padding:12px 28px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 20px 44px rgba(0,0,0,0.16);pointer-events:auto">
       <div style="display:flex;align-items:center;gap:14px">
-        <img src="./fina-logo.png" alt="" style="width:44px;height:44px;border-radius:12px;object-fit:cover;flex:none">
+        <img src="./assets/fina-logo.png" alt="FINA" style="width:44px;height:44px;border-radius:12px;object-fit:cover;flex:none">
         <div style="min-width:0">
           <div class="rjpp-topbar-title" style="font-size:16px;font-weight:800;color:#0a0a0a;letter-spacing:0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">FINA — FINANCIAL MODELLING ADHI KARYA</div>
           <div class="rjpp-topbar-sub" style="font-size:12px;color:#9a9a9a;margin-top:1px">{{ pageSubtitle }}</div>
@@ -141,31 +162,134 @@
         <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;flex-wrap:wrap;gap:12px">
           <div>
             <div style="font-size:24px;font-weight:800;color:#0a0a0a">Dashboard</div>
-            <div style="font-size:13px;color:#8a8a8a;margin-top:2px">Ringkasan RJPP &amp; tindakan yang perlu ditindaklanjuti</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#7a7a7a">
-            Periode:
-            <select style="border:1px solid #e2e2e2;background:#fff;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;color:#161616">
-              <option>Agustus 2026</option>
-            </select>
+            <div style="font-size:13px;color:#8a8a8a;margin-top:2px">FINA - Financial Modelling ADHI KARYA</div>
           </div>
         </div>
 
-        <div class="rjpp-cards-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
-          <sc-for list="{{ statusCards }}" as="card" hint-placeholder-count="3">
-            <div style="background:{{ card.bg }};border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden;box-shadow:0 8px 20px {{ card.shadow }};transition:transform .25s ease,box-shadow .25s ease" style-hover="transform:translateY(-4px)">
-              <div style="position:absolute;right:-50px;bottom:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.22);filter:blur(10px)"></div>
-              <div style="position:absolute;right:10px;bottom:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.18);filter:blur(6px)"></div>
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1">
-                <div style="display:inline-flex;align-items:center;padding:7px 15px;border-radius:20px;background:rgba(255,255,255,0.3);color:#fff;font-size:13px;font-weight:700;width:fit-content">{{ card.label }}</div>
-                <div style="width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,0.28);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;flex:none;animation:{{ card.iconAnim }}">{{ card.icon }}</div>
+
+        <div style="background:#fff;border-radius:16px;padding:26px 28px;box-shadow:0 4px 16px rgba(0,0,0,0.05)">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:18px">
+            <div>
+              <div style="font-size:19px;font-weight:800;color:#0a0a0a">Data Profitabilitas</div>
+              <div style="font-size:13px;color:#8a8a8a;margin-top:4px">{{ profitSubtitle }}</div>
+            </div>
+            <div style="background:#ececec;border:1px solid #dcdcdc;border-radius:22px;padding:6px;display:flex;gap:6px;flex-wrap:wrap">
+              <sc-for list="{{ profitTabs }}" as="t" hint-placeholder-count="4">
+                <div onClick="{{ t.onClick }}" style="display:flex;align-items:center;gap:7px;padding:9px 16px;border-radius:16px;font-size:12px;font-weight:700;cursor:pointer;background:{{ t.bg }};color:{{ t.color }};transition:background .2s ease,color .2s ease,transform .2s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;transform:translateY(-2px)"><span style="font-size:13px;color:inherit">{{ t.icon }}</span>{{ t.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div class="rjpp-filter-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#9a9a9a;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:6px">Nama Proyek</div>
+              <select style="width:100%;border:1px solid #e6d3d1;background:#fff;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:600;color:#161616"><option>Semua Proyek</option><option>Tol Solo &ndash; Yogyakarta</option><option>MRT Jakarta CP 202</option><option>Bendungan Bener</option></select>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#9a9a9a;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:6px">Unit Kerja</div>
+              <select style="width:100%;border:1px solid #e6d3d1;background:#fff;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:600;color:#161616"><option>Semua Unit Kerja</option><option>Departemen Infrastruktur I</option><option>Departemen Infrastruktur II</option><option>Departemen Gedung</option></select>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#9a9a9a;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:6px">Entitas Sendiri</div>
+              <select style="width:100%;border:1px solid #e6d3d1;background:#fff;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:600;color:#161616"><option>PT Adhi Karya (Persero) Tbk</option><option>Konsolidasi Induk</option></select>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#9a9a9a;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:6px">Entitas Group</div>
+              <select style="width:100%;border:1px solid #e6d3d1;background:#fff;border-radius:12px;padding:10px 14px;font-size:12px;font-weight:600;color:#161616"><option>Semua Entitas Group</option><option>PT Adhi Persada Gedung</option><option>PT Adhi Persada Properti</option><option>PT Adhi Persada Beton</option></select>
+            </div>
+          </div>
+
+          <div style="border:1px solid #f0e4e2;border-radius:16px;padding:24px 26px 18px">
+            <div style="font-size:15px;font-weight:800;color:#0a0a0a">{{ profitMainTitle }}</div>
+            <div style="display:flex;gap:24px;flex-wrap:wrap;margin:16px 0 22px">
+              <sc-for list="{{ profitLegend }}" as="l" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#6a6a6a;cursor:default;transition:color .2s ease,transform .2s ease" style-hover="color:#161616;transform:translateY(-2px)"><div style="width:18px;height:18px;border-radius:5px;background:{{ l.color }};flex:none;transition:transform .2s ease,box-shadow .2s ease" style-hover="transform:scale(1.15)"></div>{{ l.label }}</div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:12px">
+              <div style="display:flex;flex-direction:column;justify-content:space-between;font-size:12px;color:#b0b0b0;height:246px;padding-bottom:30px">
+                <div>8</div><div>6</div><div>4</div><div>2</div><div>0</div>
               </div>
-              <div style="position:relative;z-index:1">
-                <div style="font-size:42px;font-weight:800;color:#fff">{{ card.value }}</div>
-                <div style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:4px">{{ card.period }}</div>
+              <div style="flex:1;position:relative">
+                <div style="position:absolute;left:0;right:0;top:0;height:216px;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none">
+                  <div style="border-top:1px dashed #e6e6e6"></div><div style="border-top:1px dashed #e6e6e6"></div><div style="border-top:1px dashed #e6e6e6"></div><div style="border-top:1px dashed #e6e6e6"></div><div style="border-top:1px solid #dcdcdc"></div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px;position:relative">
+                  <sc-for list="{{ profitStacked }}" as="col" hint-placeholder-count="4">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 2px;border-radius:12px;transition:background .2s ease" style-hover="background:rgba(0,0,0,0.04)">
+                      <div style="display:flex;align-items:flex-end;justify-content:center;gap:4px;height:216px;width:100%">
+                        <sc-for list="{{ col.segs }}" as="s" hint-placeholder-count="3">
+                          <div class="rjpp-bar-wrap" style="flex:1;max-width:26px;height:216px;position:relative;display:flex;align-items:flex-end;justify-content:center;transition:transform .25s ease" style-hover="transform:translateY(-4px)">
+                            <div class="rjpp-bar-tip" style="position:absolute;left:50%;bottom:calc({{ s.h }} + 16px);background:#161616;color:#fff;padding:7px 11px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 10px 24px rgba(0,0,0,0.28);z-index:200;display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:3px;background:{{ s.color }};flex:none"></span>{{ s.tip }}</div>
+                            <div style="position:relative;width:100%;height:{{ s.h }};background:linear-gradient(90deg, {{ s.dark }} 0%, {{ s.light }} 42%, {{ s.color }} 72%, {{ s.dark }} 100%);border-radius:50% 50% 3px 3px / 13px 13px 3px 3px;transform-origin:bottom;animation:growBar .7s cubic-bezier(.22,1,.36,1) {{ s.delay }} both;transition:filter .2s ease;z-index:2;box-shadow:0 -2px 5px rgba(0,0,0,0.14)" style-hover="filter:brightness(1.12)"></div>
+                          </div>
+                        </sc-for>
+                      </div>
+                      <div style="font-size:11px;color:#7a7a7a;font-weight:600">{{ col.year }}</div>
+                    </div>
+                  </sc-for>
+                </div>
               </div>
             </div>
-          </sc-for>
+          </div>
+
+          <sc-if value="{{ profitIsKontrak }}" hint-placeholder-val="{{ true }}">
+            <div class="rjpp-pie-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px">
+              <sc-for list="{{ profitPies }}" as="p" hint-placeholder-count="3">
+                <div style="border:1px solid #f0e4e2;border-radius:16px;padding:20px;display:flex;flex-direction:column;align-items:center">
+                  <div style="font-size:13px;font-weight:700;color:#3a3a3a;text-align:center;min-height:36px">{{ p.title }}</div>
+                  <div style="position:relative;width:144px;height:144px;margin:14px 0;animation:donutGrow 1s cubic-bezier(.22,1,.36,1) both;transition:transform .25s ease" style-hover="transform:scale(1.05)">
+                    <div style="position:absolute;inset:0;border-radius:50%;background:{{ p.gradient }};box-shadow:0 8px 20px rgba(0,0,0,0.10)"></div>
+                    <div style="position:absolute;inset:20%;border-radius:50%;background:#fff"></div>
+                    <div style="position:absolute;inset:25%;border-radius:50%;background:linear-gradient(145deg, #e05a55, #b02427);display:flex;align-items:center;justify-content:center;padding:6px;box-sizing:border-box;box-shadow:0 5px 14px rgba(176,36,39,0.32)">
+                      <div style="font-size:11px;font-weight:800;color:#fff;line-height:1.15;text-align:center;letter-spacing:0.02em">{{ p.centre }}</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;width:100%">
+                    <sc-for list="{{ p.items }}" as="it" hint-placeholder-count="4">
+                      <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:#6a6a6a"><div style="width:9px;height:9px;border-radius:2px;background:{{ it.color }};flex:none"></div>{{ it.label }}</div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ profitHasCombo }}" hint-placeholder-val="{{ false }}">
+            <div style="border:1px solid #f0e4e2;border-radius:16px;padding:22px 24px 16px;margin-top:18px">
+              <div style="font-size:14px;font-weight:700;color:#3a3a3a;text-align:center;margin-bottom:20px">{{ profitComboTitle }}</div>
+              <div style="display:flex;gap:14px">
+                <div style="display:flex;flex-direction:column;justify-content:space-between;font-size:11px;color:#b0b0b0;height:190px;padding-bottom:26px">
+                  <div>8</div><div>6</div><div>4</div><div>2</div><div>0</div>
+                </div>
+                <div style="flex:1;position:relative;height:190px">
+                  <div style="position:absolute;inset:0 0 26px 0;display:grid;grid-template-columns:repeat(10,1fr);gap:0">
+                    <sc-for list="{{ profitCombo }}" as="c" hint-placeholder-count="4">
+                      <div class="rjpp-bar-wrap" style="height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;transition:transform .25s ease" style-hover="transform:translateY(-4px)">
+                        <div class="rjpp-bar-tip" style="position:absolute;left:50%;bottom:calc({{ c.h }} + 16px);background:#161616;color:#fff;padding:7px 11px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 10px 24px rgba(0,0,0,0.28);z-index:200">{{ c.tip }}</div>
+                        <div style="position:relative;width:78%;max-width:34px;height:{{ c.h }};background:linear-gradient(90deg, #7d1a1c 0%, #d14a4c 42%, #b02427 72%, #7d1a1c 100%);border-radius:50% 50% 3px 3px / 11px 11px 3px 3px;transform-origin:bottom;animation:growBar .7s cubic-bezier(.22,1,.36,1) {{ c.delay }} both;transition:filter .2s ease;z-index:2;box-shadow:0 -2px 5px rgba(0,0,0,0.14)" style-hover="filter:brightness(1.12)"></div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <svg viewBox="0 0 1000 164" preserveAspectRatio="none" style="position:absolute;top:0;left:0;right:0;height:164px;pointer-events:none;z-index:6">
+                    <polyline points="{{ profitMarginPoints }}" fill="none" stroke="#e63946" stroke-width="2.5" stroke-linecap="round" style="stroke-dasharray:900;stroke-dashoffset:900;animation:drawLine 1.4s ease forwards"></polyline>
+                  </svg>
+                  <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(10,1fr);gap:0">
+                    <sc-for list="{{ profitCombo }}" as="c" hint-placeholder-count="4">
+                      <div style="text-align:center;font-size:11px;color:#7a7a7a;font-weight:600">{{ c.year }}</div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;justify-content:space-between;font-size:11px;color:#b0b0b0;height:190px;padding-bottom:26px">
+                  <div>20%</div><div>15%</div><div>10%</div><div>5%</div><div>0%</div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:center;gap:22px;margin-top:14px">
+                <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:#6a6a6a"><div style="width:18px;height:18px;border-radius:5px;background:#b02427"></div>{{ profitComboBarLabel }}</div>
+                <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:#6a6a6a"><div style="width:16px;height:3px;border-radius:2px;background:#e63946"></div>Margin</div>
+              </div>
+            </div>
+          </sc-if>
         </div>
 
         <div class="rjpp-two-col" style="display:grid;grid-template-columns:2.4fr 1fr;gap:18px;align-items:stretch">
@@ -245,20 +369,24 @@
         <div style="background:#fff;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);padding:24px;display:flex;flex-direction:column;align-items:center">
           <div style="align-self:flex-start;margin-bottom:6px">
             <div style="font-size:15px;font-weight:700;color:#0a0a0a">Komposisi Pencapaian KPI</div>
-            <div style="font-size:12px;color:#9a9a9a;margin-top:2px">Distribusi realisasi vs sisa target</div>
+            <div style="font-size:12px;color:#9a9a9a;margin-top:2px">Capaian per indikator utama</div>
           </div>
-          <div style="position:relative;width:172px;height:172px;margin:18px 0" class="rjpp-donut-spin">
-            <div style="width:100%;height:100%;border-radius:50%;background:conic-gradient(#b02427 0deg 220deg, #e63946 220deg 300deg, #d9685f 300deg 340deg, #f2f2f2 340deg 360deg);animation:donutGrow 1.4s cubic-bezier(.22,1,.36,1) both"></div>
-            <div style="position:absolute;inset:20px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px #f2f2f2">
-              <div style="font-size:24px;font-weight:800;color:#0a0a0a">61%</div>
-              <div style="font-size:10px;color:#9a9a9a">Tercapai</div>
+          <div style="position:relative;width:196px;height:196px;margin:18px 0 14px;animation:donutGrow 1.1s cubic-bezier(.22,1,.36,1) both">
+            <div style="position:absolute;inset:0;border-radius:50%;background:{{ kpiDonutGradient }};box-shadow:0 10px 26px rgba(0,0,0,0.10)"></div>
+            <div style="position:absolute;inset:26%;border-radius:50%;background:#fff"></div>
+            <div style="position:absolute;inset:31%;border-radius:50%;background:linear-gradient(145deg, #e05a55, #b02427);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(176,36,39,0.35)">
+              <div style="font-size:22px;font-weight:800;color:#fff;line-height:1">61%</div>
+              <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.85);letter-spacing:0.08em">TERCAPAI</div>
             </div>
           </div>
-          <div style="display:flex;flex-direction:column;gap:8px;width:100%">
-            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#7a7a7a"><div style="width:9px;height:9px;border-radius:50%;background:#b02427;flex:none"></div>Pendapatan &amp; EBITDA &middot; 61%</div>
-            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#7a7a7a"><div style="width:9px;height:9px;border-radius:50%;background:#e63946;flex:none"></div>Order Book &middot; 22%</div>
-            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#7a7a7a"><div style="width:9px;height:9px;border-radius:50%;background:#d9685f;flex:none"></div>Laba Bersih &middot; 11%</div>
-            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#7a7a7a"><div style="width:9px;height:9px;border-radius:50%;background:#f2f2f2;flex:none"></div>Sisa Target &middot; 6%</div>
+          <div style="display:flex;flex-direction:column;gap:10px;width:100%">
+            <sc-for list="{{ kpiRingLegend }}" as="r" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:10px;transition:transform .2s ease" style-hover="transform:translateX(3px)">
+                <div style="width:26px;height:4px;border-radius:2px;background:{{ r.color }};flex:none"></div>
+                <div style="flex:1;font-size:12px;color:#6a6a6a">{{ r.label }}</div>
+                <div style="font-size:13px;font-weight:800;color:{{ r.color }}">{{ r.pctText }}</div>
+              </div>
+            </sc-for>
           </div>
         </div>
         </div>
@@ -275,7 +403,7 @@
             <div onClick="{{ setLaporanTabRjpp }}" style="display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:16px;font-size:12px;font-weight:700;cursor:pointer;background:{{ laporanTabRjppBg }};color:{{ laporanTabRjppColor }};transition:background .2s ease,color .2s ease,transform .2s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;transform:translateY(-2px)"><span style="font-size:14px;color:inherit">&#9776;</span>RJPP</div>
             <div onClick="{{ setLaporanTabRkap }}" style="display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:16px;font-size:12px;font-weight:700;cursor:pointer;background:{{ laporanTabRkapBg }};color:{{ laporanTabRkapColor }};transition:background .2s ease,color .2s ease,transform .2s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;transform:translateY(-2px)"><span style="font-size:14px;color:inherit">&#9783;</span>RKAP</div>
           </div>
-          <div style="position:relative;display:flex;align-items:center">
+          <div class="rjpp-search-wrap" style="position:relative;display:flex;align-items:center">
             <input value="{{ laporanSearch }}" onInput="{{ onLaporanSearchChange }}" placeholder="Cari unit, kode, atau sub kode..." class="rjpp-search-input" style="width:280px;border:1px solid #e6d3d1;background:#fff;border-radius:20px;padding:11px 16px 11px 42px;font-size:13px;color:#161616;box-shadow:0 4px 14px rgba(176,36,39,0.06);transition:box-shadow .2s ease,width .2s ease,border-color .2s ease">
             <span style="position:absolute;left:16px;font-size:15px;color:#161616;pointer-events:none;transition:transform .2s ease" class="rjpp-search-icon">&#128269;</span>
           </div>
@@ -474,7 +602,7 @@
             <div onClick="{{ setUserTabPeriode }}" style="display:flex;align-items:center;gap:9px;padding:11px 20px;border-radius:18px;font-size:13px;font-weight:700;cursor:pointer;background:{{ tabPeriodeBg }};color:{{ tabPeriodeColor }};box-shadow:{{ tabPeriodeShadow }};transition:background .25s ease,color .25s ease,transform .2s ease,box-shadow .25s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;transform:translateY(-2px);box-shadow:0 8px 18px rgba(176,36,39,0.3)"><span style="font-size:18px;font-weight:800;color:inherit">&#9783;</span>Periode Upload</div>
           </div>
 
-          <div style="position:relative;display:flex;align-items:center">
+          <div class="rjpp-search-wrap" style="position:relative;display:flex;align-items:center">
             <input value="{{ searchQuery }}" onInput="{{ onSearchChange }}" placeholder="Cari nama, email, atau label periode..." class="rjpp-search-input" style="width:280px;border:1px solid #e6d3d1;background:#fff;border-radius:20px;padding:11px 16px 11px 42px;font-size:13px;color:#161616;box-shadow:0 4px 14px rgba(176,36,39,0.06);transition:box-shadow .2s ease,width .2s ease,border-color .2s ease">
             <span style="position:absolute;left:16px;font-size:15px;color:#161616;pointer-events:none;transition:transform .2s ease" class="rjpp-search-icon">&#128269;</span>
           </div>
@@ -663,19 +791,35 @@
     <!-- UPLOAD PAGE -->
     <sc-if value="{{ isUpload }}" hint-placeholder-val="{{ false }}">
       <div style="background:#fff;border-radius:16px;padding:26px 28px;box-shadow:0 4px 16px rgba(0,0,0,0.05);animation:fadeUp .3s ease">
-        <div style="margin-bottom:20px">
-          <div style="font-size:19px;font-weight:800;color:#0a0a0a">Data Spread Sheet &amp; History Upload</div>
-          <div style="font-size:13px;color:#8a8a8a;margin-top:4px">Upload aktif (pending, approved, rejected) — arsip ada di tab Data History Upload</div>
-        </div>
 
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:20px">
+        <div style="margin-bottom:18px">
+          <div style="font-size:19px;font-weight:800;color:#0a0a0a">Menunggu Tindakan Anda:</div>
+          <div style="font-size:13px;color:#8a8a8a;margin-top:6px">Ringkasan Data RJPP &amp; tindakan yang perlu ditindaklanjuti</div>
+        </div>
+        <div class="rjpp-cards-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:28px">
+          <sc-for list="{{ statusCards }}" as="card" hint-placeholder-count="3">
+            <div style="background:{{ card.bg }};border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden;box-shadow:0 8px 20px {{ card.shadow }};transition:transform .25s ease,box-shadow .25s ease" style-hover="transform:translateY(-4px)">
+              <div style="position:absolute;right:-50px;bottom:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.22);filter:blur(10px)"></div>
+              <div style="position:absolute;right:10px;bottom:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.18);filter:blur(6px)"></div>
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1">
+                <div style="display:inline-flex;align-items:center;padding:7px 15px;border-radius:20px;background:rgba(255,255,255,0.3);color:#fff;font-size:13px;font-weight:700;width:fit-content">{{ card.label }}</div>
+                <div style="width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,0.28);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;flex:none;animation:{{ card.iconAnim }}">{{ card.icon }}</div>
+              </div>
+              <div style="position:relative;z-index:1">
+                <div style="font-size:42px;font-weight:800;color:#fff">{{ card.value }}</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:4px">{{ card.period }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:22px">
           <div style="background:#ececec;border:1px solid #dcdcdc;border-radius:22px;padding:6px;display:flex;gap:6px">
             <div onClick="{{ setTabSpreadSheet }}" style="padding:10px 20px;border-radius:16px;font-size:13px;font-weight:700;cursor:pointer;background:{{ tabSpreadBg }};color:{{ tabSpreadColor }};transition:background .2s ease,color .2s ease,transform .2s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;transform:translateY(-2px)">Data Spread Sheet</div>
             <div onClick="{{ setTabHistory }}" style="padding:10px 20px;border-radius:16px;font-size:13px;font-weight:700;cursor:pointer;background:{{ tabHistoryBg }};color:{{ tabHistoryColor }};transition:background .2s ease,color .2s ease,transform .2s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;transform:translateY(-2px)">Data History Upload</div>
           </div>
 
           <div style="display:flex;align-items:center;gap:10px">
-            <div style="position:relative;display:flex;align-items:center">
+            <div class="rjpp-search-wrap" style="position:relative;display:flex;align-items:center">
               <input value="{{ uploadSearch }}" onInput="{{ onUploadSearchChange }}" placeholder="Cari nama, email, atau label periode..." class="rjpp-search-input" style="width:280px;border:1px solid #e6d3d1;background:#fff;border-radius:20px;padding:11px 16px 11px 42px;font-size:13px;color:#161616;box-shadow:0 4px 14px rgba(176,36,39,0.06);transition:box-shadow .2s ease,width .2s ease,border-color .2s ease">
               <span style="position:absolute;left:8px;color:#fff;pointer-events:none;transition:transform .2s ease;background:linear-gradient(135deg, #ef8790, #cc4148);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px" class="rjpp-search-icon">&#128269;</span>
             </div>
@@ -799,7 +943,7 @@
                   </div>
                 </div>
 
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px">
+                <div class="rjpp-two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px">
                   <div style="background:#fff;border-radius:16px;padding:20px 22px">
                     <div style="font-size:11px;font-weight:700;color:#9a9a9a;text-transform:uppercase;letter-spacing:0.03em">Pengirim / Pembuat Draf (Drafter)</div>
                     <div style="display:flex;align-items:center;gap:14px;margin-top:14px">
@@ -846,7 +990,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { hoverIcon: null, page: 'home', uploadTab: 'sheet', selectedKpiRow: null, showProfile: false, showNotif: false, showFilter: false, selectedUploadRow: null, detailRowIndex: null, scenario: 'semua', userTab: 'kelola', searchQuery: '', masterTab: 'macro', masterEditIndex: null, masterDeleteIndex: null, laporanTab: 'rjpp', uploadSearch: '', laporanSearch: '' };
+  state = { hoverIcon: null, page: 'home', uploadTab: 'sheet', selectedKpiRow: null, showProfile: false, showNotif: false, showFilter: false, selectedUploadRow: null, detailRowIndex: null, scenario: 'semua', userTab: 'kelola', searchQuery: '', masterTab: 'macro', masterEditIndex: null, masterDeleteIndex: null, laporanTab: 'rjpp', uploadSearch: '', laporanSearch: '', profitTab: 'kontrak' };
 
   masterData = {
     macro: { years: ['2026','2027','2028','2029','2030'], rows: [
@@ -954,10 +1098,122 @@ class Component extends DCLogic {
       };
     });
 
+    const segGradient = (items, gapDeg) => {
+      let a = 0; const stops = [];
+      items.forEach(it => {
+        const span = it.pct / 100 * 360;
+        const g = Math.min(gapDeg, span * 0.35);
+        stops.push(it.color + ' ' + a.toFixed(2) + 'deg ' + (a + span - g).toFixed(2) + 'deg');
+        stops.push('#ffffff ' + (a + span - g).toFixed(2) + 'deg ' + (a + span).toFixed(2) + 'deg');
+        a += span;
+      });
+      return 'conic-gradient(from -90deg, ' + stops.join(', ') + ')';
+    };
+    const PROFIT = {
+      kontrak: {
+        subtitle: 'Perolehan kontrak & komposisi portofolio 2021 – 2030',
+        mainTitle: 'Perolehan Kontrak',
+        legend: [{ label: 'Konstruksi', color: '#b02427' }, { label: 'Properti', color: '#e63946' }, { label: 'Manufaktur', color: '#d9685f' }],
+        stacked: [[4.3, 2.5, 1.9], [2.5, 4.5, 1.9], [3.5, 1.9, 3.0], [4.5, 2.8, 5.1], [5.0, 3.1, 4.4], [5.4, 3.4, 4.0], [5.8, 3.6, 4.6], [6.1, 3.9, 5.0], [6.5, 4.2, 5.3], [6.9, 4.5, 5.7]],
+      },
+      revenue: {
+        subtitle: 'Revenue per segmen & GPM 2021 – 2030',
+        mainTitle: 'Revenue',
+        legend: [{ label: 'Konstruksi', color: '#b02427' }, { label: 'Properti', color: '#e63946' }, { label: 'Manufaktur', color: '#d9685f' }],
+        stacked: [[4.3, 2.5, 1.9], [2.5, 4.5, 1.9], [3.5, 1.9, 3.0], [4.5, 2.8, 5.1], [5.0, 3.1, 4.4], [5.4, 3.4, 4.0], [5.8, 3.6, 4.6], [6.1, 3.9, 5.0], [6.5, 4.2, 5.3], [6.9, 4.5, 5.7]],
+        comboTitle: 'Revenue dan GPM – Per Segment',
+        comboBarLabel: 'Revenue',
+        combo: [4.3, 2.5, 3.5, 4.5, 5.0, 5.4, 5.8, 6.1, 6.5, 6.9],
+        margin: [10, 8.6, 8, 15, 13.4, 12.8, 13.6, 14.2, 14.8, 15.4],
+      },
+      ebitda: {
+        subtitle: 'EBITDA per segmen & EBITDA margin 2021 – 2030',
+        mainTitle: 'EBITDA',
+        legend: [{ label: 'Konstruksi', color: '#b02427' }, { label: 'Properti', color: '#e63946' }, { label: 'Manufaktur', color: '#d9685f' }],
+        stacked: [[4.3, 2.5, 1.9], [2.5, 4.5, 1.9], [3.5, 1.9, 3.0], [4.5, 2.8, 5.1], [5.0, 3.1, 4.4], [5.4, 3.4, 4.0], [5.8, 3.6, 4.6], [6.1, 3.9, 5.0], [6.5, 4.2, 5.3], [6.9, 4.5, 5.7]],
+        comboTitle: 'EBITDA dan EBITDA Margin – Per Segment',
+        comboBarLabel: 'EBITDA',
+        combo: [4.3, 2.5, 3.5, 4.5, 5.0, 5.4, 5.8, 6.1, 6.5, 6.9],
+        margin: [10, 8.6, 8, 15, 13.4, 12.8, 13.6, 14.2, 14.8, 15.4],
+      },
+      net: {
+        subtitle: 'Net profit per segmen & net profit margin 2021 – 2030',
+        mainTitle: 'Net Profit',
+        legend: [{ label: 'Konstruksi', color: '#b02427' }, { label: 'Properti', color: '#e63946' }, { label: 'Manufaktur', color: '#d9685f' }],
+        stacked: [[4.3, 2.5, 1.9], [2.5, 4.5, 1.9], [3.5, 1.9, 3.0], [4.5, 2.8, 5.1], [5.0, 3.1, 4.4], [5.4, 3.4, 4.0], [5.8, 3.6, 4.6], [6.1, 3.9, 5.0], [6.5, 4.2, 5.3], [6.9, 4.5, 5.7]],
+        comboTitle: 'Net Profit dan Net Profit Margin – Per Segment',
+        comboBarLabel: 'Net Profit',
+        combo: [4.3, 2.5, 3.5, 4.5, 5.0, 5.4, 5.8, 6.1, 6.5, 6.9],
+        margin: [10, 8.6, 8, 15, 13.4, 12.8, 13.6, 14.2, 14.8, 15.4],
+      },
+    };
+    const pKey = this.state.profitTab || 'kontrak';
+    const pd = PROFIT[pKey];
+    const pYears = ['2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030'];
+    const profitTabs = [
+      { key: 'kontrak', label: 'Kontrak', icon: '\u25A4' },
+      { key: 'revenue', label: 'Revenue', icon: '\u25F1' },
+      { key: 'ebitda', label: 'EBITDA', icon: '\u25EC' },
+      { key: 'net', label: 'Net Profit', icon: '\u25C8' },
+    ].map(t => {
+      const active = pKey === t.key;
+      return {
+        label: t.label, icon: t.icon,
+        bg: active ? 'linear-gradient(135deg, #ef8790, #cc4148)' : 'transparent',
+        color: active ? '#fff' : '#7a7a7a',
+        onClick: () => this.setState({ profitTab: t.key }),
+      };
+    });
+    const shade = (hex, amt) => '#' + [1, 3, 5].map(o => {
+      const v = Math.round(Math.min(255, Math.max(0, parseInt(hex.substr(o, 2), 16) + amt)));
+      return v.toString(16).padStart(2, '0');
+    }).join('');
+    const profitStacked = pd.stacked.map((segs, i) => ({
+      year: pYears[i],
+      delay: (i * 0.09).toFixed(2) + 's',
+      segs: segs.map((v, j) => ({
+        h: Math.max(v / 8 * 216, 6).toFixed(1) + 'px',
+        trackH: Math.min(v / 8 * 216 + 34, 216).toFixed(1) + 'px',
+        color: pd.legend[j].color,
+        light: shade(pd.legend[j].color, 46),
+        dark: shade(pd.legend[j].color, -52),
+        delay: (i * 0.08 + j * 0.05).toFixed(2) + 's',
+        tip: pd.legend[j].label + ' ' + pYears[i] + ': ' + v.toFixed(1) + ' T',
+      })),
+    }));
+    const profitCombo = (pd.combo || []).map((v, i) => ({
+      year: pYears[i], h: (v / 8 * 164).toFixed(1) + 'px', trackH: Math.min(v / 8 * 164 + 26, 164).toFixed(1) + 'px', delay: (i * 0.09).toFixed(2) + 's',
+      tip: pd.comboBarLabel + ' ' + pYears[i] + ': ' + v.toFixed(1) + ' T · Margin ' + pd.margin[i] + '%',
+    }));
+    const profitMarginPoints = (pd.margin || [])
+      .map((m, i) => ((i + 0.5) * 100) + ',' + (164 - m / 20 * 164).toFixed(1)).join(' ');
+    const pieDefs = [
+      { title: 'Proporsi Kontrak berdasarkan Owner', centre: 'Owner',
+        segs: [{ label: 'Pemerintah', pct: 57, color: '#b02427' }, { label: 'BUMN', pct: 22, color: '#e63946' }, { label: 'Swasta', pct: 11, color: '#d9685f' }, { label: 'Lainnya', pct: 10, color: '#bcbcbc' }] },
+      { title: 'Proporsi Kontrak berdasarkan NJO / JO', centre: 'NJO &amp; JO',
+        segs: [{ label: 'NJO', pct: 74, color: '#b02427' }, { label: 'JO', pct: 26, color: '#d9685f' }] },
+      { title: 'Proporsi Kontrak berdasarkan Segment Konstruksi', centre: 'Segmen',
+        segs: [{ label: 'General Civil', pct: 43, color: '#9e1616' }, { label: 'Power', pct: 18, color: '#b02427' }, { label: 'Industri dan Hilirisasi', pct: 8, color: '#e63946' }, { label: 'Railway', pct: 7, color: '#d9685f' }, { label: 'Komersial & Residensial', pct: 24, color: '#bcbcbc' }] },
+    ];
+    const profitPies = pieDefs.map(p => ({
+      title: p.title, centre: p.centre,
+      gradient: segGradient(p.segs, 5),
+      items: p.segs.map(s => ({ label: s.label + ' ' + s.pct + '%', color: s.color })),
+    }));
+
+    const kpiRings = [
+      { label: 'Pendapatan & EBITDA', pct: 38, color: '#b02427' },
+      { label: 'Order Book', pct: 27, color: '#e63946' },
+      { label: 'Laba Bersih', pct: 21, color: '#d9685f' },
+      { label: 'Sisa Target', pct: 14, color: '#bcbcbc' },
+    ];
+    const kpiDonutGradient = segGradient(kpiRings, 4);
+    const kpiRingLegend = kpiRings.map(r => ({ label: r.label, color: r.color, pctText: r.pct + '%' }));
+
     const statusCards = [
-      { label: 'Menunggu Approval', value: '0', period: 'Agustus 2026', bg: 'linear-gradient(135deg, #d98588, #a94547)', shadow: 'rgba(139,28,30,0.30)', icon: '\u23F0\uFE0E', iconAnim: 'softPulse 2.4s ease-in-out infinite' },
-      { label: 'Data Approval', value: '9', period: 'Agustus 2026', bg: 'linear-gradient(135deg, #ef8790, #cc4148)', shadow: 'rgba(198,42,54,0.30)', icon: '\u2713', iconAnim: 'none' },
-      { label: 'Data Ditolak', value: '0', period: 'Agustus 2026', bg: 'linear-gradient(135deg, #eaa89f, #d97463)', shadow: 'rgba(196,101,79,0.30)', icon: '\u2715', iconAnim: 'none' },
+      { label: 'Menunggu Approval', value: '0', period: 'Agustus 2026', bg: 'linear-gradient(135deg, #c9403f, #7d0f0f)', shadow: 'rgba(125,15,15,0.38)', icon: '\u23F0\uFE0E', iconAnim: 'softPulse 2.4s ease-in-out infinite' },
+      { label: 'Data Disetujui', value: '9', period: 'Agustus 2026', bg: 'linear-gradient(135deg, #f2635c, #b02427)', shadow: 'rgba(176,36,39,0.38)', icon: '\u2713', iconAnim: 'none' },
+      { label: 'Data Ditolak', value: '0', period: 'Agustus 2026', bg: 'linear-gradient(135deg, #f7cdc6, #d9685f)', shadow: 'rgba(217,104,95,0.32)', icon: '\u2715', iconAnim: 'none' },
     ];
 
     const kpiYears = ['2026', '2027', '2028', '2029', '2030'];
@@ -1207,7 +1463,11 @@ class Component extends DCLogic {
       onLaporanSearchChange: (e) => this.setState({ laporanSearch: e.target.value }),
       grafikCards, grafikBars, grafikPeakLeftPct, grafikPeakLabel, grafikKpiYears, grafikKpiRows,
       ratioRows, incomeRows, financeYears,
-      railIcons, statusCards, kpiYears, kpiRows, trendBars, recentUploads, peakLeftPct, peakLabel,
+      profitTabs, profitStacked, profitCombo, profitPies, profitMarginPoints,
+      profitSubtitle: pd.subtitle, profitMainTitle: pd.mainTitle, profitLegend: pd.legend,
+      profitComboTitle: pd.comboTitle, profitComboBarLabel: pd.comboBarLabel,
+      profitIsKontrak: pKey === 'kontrak', profitHasCombo: pKey !== 'kontrak',
+      railIcons, statusCards, kpiDonutGradient, kpiRingLegend, kpiYears, kpiRows, trendBars, recentUploads, peakLeftPct, peakLabel,
       pendingUnits: ['Departemen Infrastruktur I belum upload', 'Departemen Infrastruktur II belum upload'],
       showProfile: this.state.showProfile,
       showNotif: this.state.showNotif,
