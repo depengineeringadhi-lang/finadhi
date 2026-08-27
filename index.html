@@ -31,6 +31,10 @@
   .rjpp-bar-tip{opacity:0;transform:translate(-50%,6px) scale(.94);transition:opacity .18s ease,transform .18s ease;pointer-events:none}
   .rjpp-bar-wrap:hover .rjpp-bar-tip{opacity:1;transform:translate(-50%,0) scale(1)}
   .rjpp-bar-wrap:hover{z-index:60}
+  .rjpp-bar-wrap:hover .rjpp-bar-chip{opacity:1}
+  .rjpp-bar-chip{opacity:0;transform:translateX(-50%) translateY(4px);transition:opacity .18s ease,transform .18s ease;pointer-events:none}
+  .rjpp-bar-wrap:hover .rjpp-bar-chip{opacity:1;transform:translateX(-50%) translateY(0)}
+  @keyframes sliceIn{from{opacity:0;transform:scale(.62) rotate(-14deg)}to{opacity:1;transform:scale(1) rotate(0)}}
   @keyframes donutGrow{from{transform:scale(0.5) rotate(-120deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
   @keyframes donutGlow{0%,100%{filter:drop-shadow(0 0 0 rgba(176,36,39,0))}50%{filter:drop-shadow(0 0 16px rgba(176,36,39,0.45))}}
   .rjpp-donut-spin{animation:donutGlow 2.6s ease-in-out infinite}
@@ -157,7 +161,7 @@
 
     <!-- HOME PAGE -->
     <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
-      <div style="display:flex;flex-direction:column;gap:20px;animation:fadeUp .3s ease">
+      <div style="background:#fff;border-radius:16px;padding:26px 28px;box-shadow:0 4px 16px rgba(0,0,0,0.05);display:flex;flex-direction:column;gap:20px;animation:fadeUp .3s ease">
 
         <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;flex-wrap:wrap;gap:12px">
           <div>
@@ -217,11 +221,11 @@
                 <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px;position:relative">
                   <sc-for list="{{ profitStacked }}" as="col" hint-placeholder-count="4">
                     <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 2px;border-radius:12px;transition:background .2s ease" style-hover="background:rgba(0,0,0,0.04)">
-                      <div style="display:flex;align-items:flex-end;justify-content:center;gap:4px;height:216px;width:100%">
+                      <div style="display:flex;align-items:flex-end;justify-content:center;gap:5px;height:216px;width:100%">
                         <sc-for list="{{ col.segs }}" as="s" hint-placeholder-count="3">
                           <div class="rjpp-bar-wrap" style="flex:1;max-width:26px;height:216px;position:relative;display:flex;align-items:flex-end;justify-content:center;transition:transform .25s ease" style-hover="transform:translateY(-4px)">
                             <div class="rjpp-bar-tip" style="position:absolute;left:50%;bottom:calc({{ s.h }} + 16px);background:#161616;color:#fff;padding:7px 11px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 10px 24px rgba(0,0,0,0.28);z-index:200;display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:3px;background:{{ s.color }};flex:none"></span>{{ s.tip }}</div>
-                            <div style="position:relative;width:100%;height:{{ s.h }};background:linear-gradient(90deg, {{ s.dark }} 0%, {{ s.light }} 42%, {{ s.color }} 72%, {{ s.dark }} 100%);border-radius:50% 50% 3px 3px / 13px 13px 3px 3px;transform-origin:bottom;animation:growBar .7s cubic-bezier(.22,1,.36,1) {{ s.delay }} both;transition:filter .2s ease;z-index:2;box-shadow:0 -2px 5px rgba(0,0,0,0.14)" style-hover="filter:brightness(1.12)"></div>
+                            <div style="position:relative;width:100%;height:{{ s.h }};background:{{ s.color }};border-radius:3px 3px 0 0;transform-origin:bottom;animation:growBar .7s cubic-bezier(.22,1,.36,1) {{ s.delay }} both;transition:filter .2s ease;z-index:2" style-hover="filter:brightness(1.1)"><div class="rjpp-bar-chip" style="position:absolute;left:50%;bottom:calc(100% + 5px);transform:translateX(-50%);background:{{ s.color }};color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;white-space:nowrap;box-shadow:0 2px 5px rgba(0,0,0,0.16);z-index:120">{{ s.valText }}</div></div>
                           </div>
                         </sc-for>
                       </div>
@@ -238,11 +242,25 @@
               <sc-for list="{{ profitPies }}" as="p" hint-placeholder-count="3">
                 <div style="border:1px solid #f0e4e2;border-radius:16px;padding:20px;display:flex;flex-direction:column;align-items:center">
                   <div style="font-size:13px;font-weight:700;color:#3a3a3a;text-align:center;min-height:36px">{{ p.title }}</div>
-                  <div style="position:relative;width:144px;height:144px;margin:14px 0;animation:donutGrow 1s cubic-bezier(.22,1,.36,1) both;transition:transform .25s ease" style-hover="transform:scale(1.05)">
-                    <div style="position:absolute;inset:0;border-radius:50%;background:{{ p.gradient }};box-shadow:0 8px 20px rgba(0,0,0,0.10)"></div>
-                    <div style="position:absolute;inset:20%;border-radius:50%;background:#fff"></div>
-                    <div style="position:absolute;inset:25%;border-radius:50%;background:linear-gradient(145deg, #e05a55, #b02427);display:flex;align-items:center;justify-content:center;padding:6px;box-sizing:border-box;box-shadow:0 5px 14px rgba(176,36,39,0.32)">
-                      <div style="font-size:11px;font-weight:800;color:#fff;line-height:1.15;text-align:center;letter-spacing:0.02em">{{ p.centre }}</div>
+                  <div style="margin:14px 0;display:flex;justify-content:center">
+                    <div style="position:relative;width:158px;height:158px">
+                      <svg viewBox="0 0 220 220" style="width:100%;height:100%;overflow:visible">
+                        <sc-for list="{{ p.slices }}" as="s" hint-placeholder-count="4">
+                          <g onMouseEnter="{{ s.onEnter }}" onMouseLeave="{{ s.onLeave }}" style="cursor:pointer;transform-origin:110px 110px;transition:transform .42s cubic-bezier(.34,1.56,.64,1),filter .32s ease;animation:sliceIn .8s cubic-bezier(.22,1,.36,1) {{ s.delay }} both" style-hover="transform:translate({{ s.popX }},{{ s.popY }}) scale(1.16);filter:drop-shadow(0 16px 28px rgba(0,0,0,0.3)) brightness(1.06)">
+                            <path d="{{ s.d }}" fill="{{ s.color }}"></path>
+                            <text x="{{ s.labelX }}" y="{{ s.labelY }}" text-anchor="middle" fill="{{ s.labelFill }}" font-size="{{ s.labelSize }}" font-weight="700" style="pointer-events:none;font-family:Poppins,sans-serif">{{ s.pctText }}</text>
+                          </g>
+                        </sc-for>
+                      </svg>
+                      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none">
+                        <div style="font-size:17px;font-weight:800;color:#0a0a0a;line-height:1.1">{{ p.centrePct }}</div>
+                        <div style="font-size:9px;font-weight:700;color:#8a8a8a;letter-spacing:0.1em;text-transform:uppercase;text-align:center;max-width:76px;line-height:1.25">{{ p.centre }}</div>
+                      </div>
+                      <sc-for list="{{ p.slices }}" as="s" hint-placeholder-count="4">
+                        <sc-if value="{{ s.isHot }}" hint-placeholder-val="{{ false }}">
+                          <div style="position:absolute;left:{{ s.tipLeft }};top:{{ s.tipTop }};transform:translate(-50%,-190%);background:#161616;color:#fff;padding:7px 12px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 12px 26px rgba(0,0,0,0.3);pointer-events:none;z-index:400;animation:popIn .18s cubic-bezier(.34,1.56,.64,1) both">{{ s.tipText }}</div>
+                        </sc-if>
+                      </sc-for>
                     </div>
                   </div>
                   <div style="display:flex;flex-direction:column;gap:6px;width:100%">
@@ -267,11 +285,11 @@
                     <sc-for list="{{ profitCombo }}" as="c" hint-placeholder-count="4">
                       <div class="rjpp-bar-wrap" style="height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;transition:transform .25s ease" style-hover="transform:translateY(-4px)">
                         <div class="rjpp-bar-tip" style="position:absolute;left:50%;bottom:calc({{ c.h }} + 16px);background:#161616;color:#fff;padding:7px 11px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 10px 24px rgba(0,0,0,0.28);z-index:200">{{ c.tip }}</div>
-                        <div style="position:relative;width:78%;max-width:34px;height:{{ c.h }};background:linear-gradient(90deg, #7d1a1c 0%, #d14a4c 42%, #b02427 72%, #7d1a1c 100%);border-radius:50% 50% 3px 3px / 11px 11px 3px 3px;transform-origin:bottom;animation:growBar .7s cubic-bezier(.22,1,.36,1) {{ c.delay }} both;transition:filter .2s ease;z-index:2;box-shadow:0 -2px 5px rgba(0,0,0,0.14)" style-hover="filter:brightness(1.12)"></div>
+                        <div style="position:relative;width:78%;max-width:34px;height:{{ c.h }};background:#8b1c29;border-radius:3px 3px 0 0;transform-origin:bottom;animation:growBar .7s cubic-bezier(.22,1,.36,1) {{ c.delay }} both;transition:filter .2s ease;z-index:2" style-hover="filter:brightness(1.1)"><div class="rjpp-bar-chip" style="position:absolute;left:50%;bottom:calc(100% + 5px);transform:translateX(-50%);background:#8b1c29;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;white-space:nowrap;box-shadow:0 2px 5px rgba(0,0,0,0.16);z-index:120">{{ c.valText }}</div></div>
                       </div>
                     </sc-for>
                   </div>
-                  <svg viewBox="0 0 1000 164" preserveAspectRatio="none" style="position:absolute;top:0;left:0;right:0;height:164px;pointer-events:none;z-index:6">
+                  <svg viewBox="0 0 1000 164" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:164px;pointer-events:none;z-index:6">
                     <polyline points="{{ profitMarginPoints }}" fill="none" stroke="#e63946" stroke-width="2.5" stroke-linecap="round" style="stroke-dasharray:900;stroke-dashoffset:900;animation:drawLine 1.4s ease forwards"></polyline>
                   </svg>
                   <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(10,1fr);gap:0">
@@ -285,7 +303,7 @@
                 </div>
               </div>
               <div style="display:flex;justify-content:center;gap:22px;margin-top:14px">
-                <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:#6a6a6a"><div style="width:18px;height:18px;border-radius:5px;background:#b02427"></div>{{ profitComboBarLabel }}</div>
+                <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:#6a6a6a"><div style="width:18px;height:18px;border-radius:5px;background:#8b1c29"></div>{{ profitComboBarLabel }}</div>
                 <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:#6a6a6a"><div style="width:16px;height:3px;border-radius:2px;background:#e63946"></div>Margin</div>
               </div>
             </div>
@@ -294,45 +312,118 @@
 
         <div class="rjpp-two-col" style="display:grid;grid-template-columns:2.4fr 1fr;gap:18px;align-items:stretch">
           <div style="background:#fff;border-radius:16px;padding:24px 28px;box-shadow:0 4px 16px rgba(0,0,0,0.05);display:flex;flex-direction:column">
-            <div style="font-size:15px;font-weight:700;color:#0a0a0a">Trend Sales &ndash; Breakdown Eliminir</div>
-            <div style="font-size:12px;color:#9a9a9a;margin-top:2px;margin-bottom:24px">Realisasi 2017 sd. 2025 &middot; per Agustus 2026</div>
-            <div style="position:relative;flex:1;display:flex;align-items:flex-end;gap:12px;min-height:200px">
-              <div style="position:absolute;left:{{ peakLeftPct }};top:0;transform:translateX(-50%);background:#161616;color:#fff;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;white-space:nowrap;animation:fadeInPeak .5s ease .9s both">Puncak &middot; {{ peakLabel }}</div>
-              <sc-for list="{{ trendBars }}" as="b" hint-placeholder-count="9">
-                <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;gap:8px">
-                  <div style="width:64%;height:{{ b.h }};background:{{ b.color }};border-radius:8px 8px 0 0;transform-origin:bottom;animation:growBar .7s cubic-bezier(.22,1,.36,1) {{ b.delay }} both;transition:opacity .2s ease,filter .2s ease" style-hover="filter:brightness(1.08)"></div>
-                  <div style="font-size:11px;color:#9a9a9a">{{ b.year }}</div>
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+              <div>
+                <div style="font-size:15px;font-weight:700;color:#0a0a0a">Data Likuiditas &ndash; Arus Kas</div>
+                <div style="font-size:12px;color:#9a9a9a;margin-top:2px">Realisasi 2021 sd. 2024 &middot; dalam triliun Rupiah</div>
+              </div>
+              <div style="background:#ececec;border:1px solid #dcdcdc;border-radius:20px;padding:5px;display:flex;gap:5px">
+                <sc-for list="{{ likuidTabs }}" as="t" hint-placeholder-count="3">
+                  <div onClick="{{ t.onClick }}" style="padding:7px 14px;border-radius:15px;font-size:11px;font-weight:700;cursor:pointer;background:{{ t.bg }};color:{{ t.color }};white-space:nowrap;transition:background .2s ease,color .2s ease,transform .2s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff;transform:translateY(-2px)">{{ t.label }}</div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="font-size:12px;font-weight:700;color:#6a6a6a;text-align:center;margin:18px 0 10px">{{ likuidTitle }}</div>
+
+            <sc-if value="{{ likuidIsLine }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;display:flex;gap:12px;min-height:210px">
+                <div style="display:flex;flex-direction:column;justify-content:space-between;font-size:11px;color:#b0b0b0;height:184px;text-align:right">
+                  <sc-for list="{{ likuidTicks }}" as="tk" hint-placeholder-count="5"><div>{{ tk }}</div></sc-for>
                 </div>
+                <div style="flex:1;position:relative">
+                  <div style="position:absolute;left:0;right:0;top:0;height:184px;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none">
+                    <sc-for list="{{ likuidTicks }}" as="tk" hint-placeholder-count="5"><div style="border-top:1px dashed #ececec"></div></sc-for>
+                  </div>
+                  <svg viewBox="0 0 400 184" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:184px;pointer-events:none">
+                    <polyline points="{{ likuidLinePoints }}" fill="none" stroke="#8b1c29" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray:1200;stroke-dashoffset:1200;animation:drawLine 1.3s ease .2s forwards"></polyline>
+                  </svg>
+                  <div style="position:absolute;left:0;right:0;top:0;height:184px;display:grid;grid-template-columns:repeat(4,1fr)">
+                    <sc-for list="{{ likuidLineDots }}" as="d" hint-placeholder-count="4">
+                      <div class="rjpp-bar-wrap" style="position:relative;display:flex;justify-content:center">
+                        <div class="rjpp-bar-tip" style="position:absolute;left:50%;top:{{ d.tipTop }};background:#161616;color:#fff;padding:6px 11px;border-radius:9px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 10px 24px rgba(0,0,0,0.28);z-index:200">{{ d.tip }}</div>
+                        <div style="position:absolute;top:{{ d.top }};width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid #8b1c29;box-sizing:border-box;transition:transform .2s ease" style-hover="transform:scale(1.35)"></div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="position:absolute;left:0;right:0;top:190px;display:grid;grid-template-columns:repeat(4,1fr)">
+                    <sc-for list="{{ likuidYears }}" as="y" hint-placeholder-count="4"><div style="text-align:center;font-size:11px;color:#7a7a7a;font-weight:600">{{ y }}</div></sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ likuidIsBars }}" hint-placeholder-val="{{ true }}">
+              <div style="flex:1;display:flex;gap:12px;min-height:210px">
+                <div style="display:flex;flex-direction:column;justify-content:space-between;font-size:11px;color:#b0b0b0;height:184px;text-align:right">
+                  <sc-for list="{{ likuidTicks }}" as="tk" hint-placeholder-count="5"><div>{{ tk }}</div></sc-for>
+                </div>
+                <div style="flex:1;position:relative">
+                  <div style="position:absolute;left:0;right:0;top:0;height:184px;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none">
+                    <sc-for list="{{ likuidTicks }}" as="tk" hint-placeholder-count="5"><div style="border-top:1px dashed #ececec"></div></sc-for>
+                  </div>
+                  <div style="position:absolute;left:0;right:0;top:{{ likuidZeroTop }};border-top:1.5px solid #c9c9c9;pointer-events:none"></div>
+                  <div style="position:relative;height:184px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+                    <sc-for list="{{ likuidCols }}" as="col" hint-placeholder-count="4">
+                      <div style="position:relative;display:flex;justify-content:center">
+                        <div style="position:relative;width:84%;max-width:90px;height:100%">
+                          <sc-for list="{{ col.segs }}" as="s" hint-placeholder-count="3">
+                            <div class="rjpp-bar-wrap" style="position:absolute;left:{{ s.left }};width:{{ s.width }};top:{{ s.top }};height:{{ s.h }};background:{{ s.color }};border-radius:{{ s.radius }};transform-origin:{{ s.origin }};animation:growBar .7s cubic-bezier(.22,1,.36,1) {{ s.delay }} both;transition:filter .2s ease" style-hover="filter:brightness(1.1)">
+                              <div class="rjpp-bar-chip" style="position:absolute;left:50%;{{ s.chipSide }}:calc(100% + 5px);transform:translateX(-50%);background:{{ s.color }};color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;white-space:nowrap;box-shadow:0 2px 5px rgba(0,0,0,0.16);z-index:120">{{ s.valText }}</div>
+                              <div class="rjpp-bar-tip" style="position:absolute;left:50%;bottom:calc(100% + 26px);background:#161616;color:#fff;padding:6px 11px;border-radius:9px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 10px 24px rgba(0,0,0,0.28);z-index:200">{{ s.tip }}</div>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="position:absolute;left:0;right:0;top:190px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+                    <sc-for list="{{ likuidYears }}" as="y" hint-placeholder-count="4"><div style="text-align:center;font-size:11px;color:#7a7a7a;font-weight:600">{{ y }}</div></sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:32px">
+              <sc-for list="{{ likuidLegend }}" as="l" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#6a6a6a"><div style="width:14px;height:14px;border-radius:4px;background:{{ l.color }};flex:none"></div>{{ l.label }}</div>
               </sc-for>
             </div>
           </div>
 
-          <div style="display:flex;flex-direction:column;gap:18px">
-            <div style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);display:flex;flex-direction:column;gap:12px">
-              <div style="font-size:13px;font-weight:700;color:#0a0a0a">Unit Kerja belum upload</div>
-              <div style="display:flex;flex-direction:column;gap:8px">
-                <sc-for list="{{ pendingUnits }}" as="u" hint-placeholder-count="2">
-                  <div style="display:flex;align-items:center;gap:9px">
-                    <div style="width:8px;height:8px;border-radius:50%;background:#e63946;flex:none"></div>
-                    <div style="font-size:13px;font-weight:600;color:#161616">{{ u }}</div>
+          <div style="background:#fff;border-radius:16px;padding:22px 24px;box-shadow:0 4px 16px rgba(0,0,0,0.05);display:flex;flex-direction:column">
+            <div style="font-size:15px;font-weight:700;color:#0a0a0a">Data Solvabilitas</div>
+            <div style="font-size:12px;color:#9a9a9a;margin-top:2px">Realisasi 2021 sd. 2024</div>
+            <div style="font-size:12px;font-weight:700;color:#6a6a6a;text-align:center;margin:16px 0 6px">Debt to Equity Ratio</div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+              <div style="position:relative;width:190px;height:190px">
+                <svg viewBox="0 0 220 220" style="width:100%;height:100%;overflow:visible">
+                  <sc-for list="{{ solvSlices }}" as="s" hint-placeholder-count="4">
+                    <g onMouseEnter="{{ s.onEnter }}" onMouseLeave="{{ s.onLeave }}" style="cursor:pointer;transform-origin:110px 110px;transition:transform .42s cubic-bezier(.34,1.56,.64,1),filter .32s ease;animation:sliceIn .8s cubic-bezier(.22,1,.36,1) {{ s.delay }} both" style-hover="transform:translate({{ s.popX }},{{ s.popY }}) scale(1.16);filter:drop-shadow(0 16px 28px rgba(0,0,0,0.3)) brightness(1.06)">
+                      <path d="{{ s.d }}" fill="{{ s.color }}"></path>
+                      <text x="{{ s.labelX }}" y="{{ s.labelY }}" text-anchor="middle" fill="{{ s.labelFill }}" font-size="{{ s.labelSize }}" font-weight="700" style="pointer-events:none;font-family:Poppins,sans-serif">{{ s.pctText }}</text>
+                    </g>
+                  </sc-for>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none">
+                  <div style="font-size:20px;font-weight:800;color:#0a0a0a;line-height:1.1">5.0</div>
+                  <div style="font-size:9px;font-weight:700;color:#8a8a8a;letter-spacing:0.1em;text-transform:uppercase;text-align:center;line-height:1.25">DER 2024</div>
+                </div>
+                <sc-for list="{{ solvSlices }}" as="s" hint-placeholder-count="4">
+                  <sc-if value="{{ s.isHot }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute;left:{{ s.tipLeft }};top:{{ s.tipTop }};transform:translate(-50%,-190%);background:#161616;color:#fff;padding:7px 12px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 12px 26px rgba(0,0,0,0.3);pointer-events:none;z-index:400;animation:popIn .18s cubic-bezier(.34,1.56,.64,1) both">{{ s.tipText }}</div>
+                  </sc-if>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:9px;width:100%">
+                <sc-for list="{{ solvLegend }}" as="l" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:10px;transition:transform .2s ease" style-hover="transform:translateX(3px)">
+                    <div style="width:22px;height:4px;border-radius:2px;background:{{ l.color }};flex:none"></div>
+                    <div style="flex:1;font-size:12px;color:#6a6a6a">{{ l.label }}</div>
+                    <div style="font-size:12px;font-weight:800;color:{{ l.color }}">{{ l.value }}</div>
                   </div>
                 </sc-for>
               </div>
-              <div style="font-size:12px;color:#9a9a9a">3 Unit Kerja sudah upload</div>
-              <div style="text-align:center;padding:10px 14px;border-radius:10px;background:#f2f2f2;color:#b02427;font-size:12px;font-weight:700;cursor:pointer;transition:background .25s ease,color .25s ease" style-hover="background:linear-gradient(135deg, #ef8790, #cc4148);color:#fff">Ingatkan Unit Kerja</div>
-            </div>
-
-            <div style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);flex:1">
-              <div style="font-size:13px;font-weight:700;color:#0a0a0a;margin-bottom:14px">Data Terbaru</div>
-              <div style="display:flex;flex-direction:column;gap:12px">
-                <sc-for list="{{ recentUploads }}" as="u" hint-placeholder-count="5">
-                  <div style="display:flex;align-items:center;justify-content:space-between">
-                    <div style="font-size:13px;font-weight:600;color:#161616">{{ u.name }}</div>
-                    <div style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#1f7a4c;background:#e3f5ea;padding:4px 10px;border-radius:6px"><span>&#10003;</span>{{ u.status }}</div>
-                  </div>
-                </sc-for>
-              </div>
-              <div style="font-size:12px;font-weight:600;color:#b02427;margin-top:14px;cursor:pointer">Lihat semua &rarr;</div>
             </div>
           </div>
         </div>
@@ -371,12 +462,27 @@
             <div style="font-size:15px;font-weight:700;color:#0a0a0a">Komposisi Pencapaian KPI</div>
             <div style="font-size:12px;color:#9a9a9a;margin-top:2px">Capaian per indikator utama</div>
           </div>
-          <div style="position:relative;width:196px;height:196px;margin:18px 0 14px;animation:donutGrow 1.1s cubic-bezier(.22,1,.36,1) both">
-            <div style="position:absolute;inset:0;border-radius:50%;background:{{ kpiDonutGradient }};box-shadow:0 10px 26px rgba(0,0,0,0.10)"></div>
-            <div style="position:absolute;inset:26%;border-radius:50%;background:#fff"></div>
-            <div style="position:absolute;inset:31%;border-radius:50%;background:linear-gradient(145deg, #e05a55, #b02427);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(176,36,39,0.35)">
-              <div style="font-size:22px;font-weight:800;color:#fff;line-height:1">61%</div>
-              <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.85);letter-spacing:0.08em">TERCAPAI</div>
+          <div style="position:relative;margin:18px 0 14px">
+            <div style="display:flex;justify-content:center">
+                    <div style="position:relative;width:196px;height:196px">
+                      <svg viewBox="0 0 220 220" style="width:100%;height:100%;overflow:visible">
+                        <sc-for list="{{ kpiPieSlices }}" as="s" hint-placeholder-count="4">
+                          <g onMouseEnter="{{ s.onEnter }}" onMouseLeave="{{ s.onLeave }}" style="cursor:pointer;transform-origin:110px 110px;transition:transform .42s cubic-bezier(.34,1.56,.64,1),filter .32s ease;animation:sliceIn .8s cubic-bezier(.22,1,.36,1) {{ s.delay }} both" style-hover="transform:translate({{ s.popX }},{{ s.popY }}) scale(1.16);filter:drop-shadow(0 16px 28px rgba(0,0,0,0.3)) brightness(1.06)">
+                            <path d="{{ s.d }}" fill="{{ s.color }}"></path>
+                            <text x="{{ s.labelX }}" y="{{ s.labelY }}" text-anchor="middle" fill="{{ s.labelFill }}" font-size="{{ s.labelSize }}" font-weight="700" style="pointer-events:none;font-family:Poppins,sans-serif">{{ s.pctText }}</text>
+                          </g>
+                        </sc-for>
+                      </svg>
+                      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none">
+                        <div style="font-size:21px;font-weight:800;color:#0a0a0a;line-height:1.1">{{ kpiTopPct }}</div>
+                        <div style="font-size:9px;font-weight:700;color:#8a8a8a;letter-spacing:0.1em;text-transform:uppercase;text-align:center;max-width:76px;line-height:1.25">Tercapai</div>
+                      </div>
+                      <sc-for list="{{ kpiPieSlices }}" as="s" hint-placeholder-count="4">
+                        <sc-if value="{{ s.isHot }}" hint-placeholder-val="{{ false }}">
+                          <div style="position:absolute;left:{{ s.tipLeft }};top:{{ s.tipTop }};transform:translate(-50%,-190%);background:#161616;color:#fff;padding:7px 12px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 12px 26px rgba(0,0,0,0.3);pointer-events:none;z-index:400;animation:popIn .18s cubic-bezier(.34,1.56,.64,1) both">{{ s.tipText }}</div>
+                        </sc-if>
+                      </sc-for>
+                    </div>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:10px;width:100%">
@@ -506,7 +612,7 @@
             </div>
           </div>
           <div style="display:flex;gap:20px;margin-top:16px;padding-top:16px;border-top:1px solid #f0f0f0">
-            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#7a7a7a"><div style="width:10px;height:10px;border-radius:50%;background:#8f1f1c"></div>SALES [excl. Eliminir]</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#7a7a7a"><div style="width:10px;height:10px;border-radius:50%;background:#8b1c29"></div>SALES [excl. Eliminir]</div>
             <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#7a7a7a"><div style="width:10px;height:10px;border-radius:50%;background:#d9685f"></div>SALES [Eliminir]</div>
           </div>
         </div>
@@ -990,7 +1096,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { hoverIcon: null, page: 'home', uploadTab: 'sheet', selectedKpiRow: null, showProfile: false, showNotif: false, showFilter: false, selectedUploadRow: null, detailRowIndex: null, scenario: 'semua', userTab: 'kelola', searchQuery: '', masterTab: 'macro', masterEditIndex: null, masterDeleteIndex: null, laporanTab: 'rjpp', uploadSearch: '', laporanSearch: '', profitTab: 'kontrak' };
+  state = { hoverIcon: null, page: 'home', uploadTab: 'sheet', selectedKpiRow: null, showProfile: false, showNotif: false, showFilter: false, selectedUploadRow: null, detailRowIndex: null, scenario: 'semua', userTab: 'kelola', searchQuery: '', masterTab: 'macro', masterEditIndex: null, masterDeleteIndex: null, laporanTab: 'rjpp', hoverSlice: null, likuidTab: 'aruskas', uploadSearch: '', laporanSearch: '', profitTab: 'kontrak' };
 
   masterData = {
     macro: { years: ['2026','2027','2028','2029','2030'], rows: [
@@ -1098,6 +1204,39 @@ class Component extends DCLogic {
       };
     });
 
+    const donutRing = (segs, chartId) => {
+      const cx = 110, cy = 110, R = 92, r = 54, GAP = 1.4;
+      const total = segs.reduce((s, x) => s + x.pct, 0) || 1;
+      let a = -90;
+      return segs.map((s, i) => {
+        const span = s.pct / total * 360;
+        const a0 = a + GAP / 2, a1 = a + span - GAP / 2;
+        a += span;
+        const rad = d => d * Math.PI / 180, mid = (a0 + a1) / 2;
+        const P = (rr, ang) => [(cx + rr * Math.cos(rad(ang))).toFixed(2), (cy + rr * Math.sin(rad(ang))).toFixed(2)];
+        const [ox0, oy0] = P(R, a0), [ox1, oy1] = P(R, a1);
+        const [ix1, iy1] = P(r, a1), [ix0, iy0] = P(r, a0);
+        const lr = (a1 - a0) > 180 ? 1 : 0;
+        const lx = cx + (R + r) / 2 * Math.cos(rad(mid)), ly = cy + (R + r) / 2 * Math.sin(rad(mid));
+        return {
+          d: 'M ' + ox0 + ' ' + oy0 + ' A ' + R + ' ' + R + ' 0 ' + lr + ' 1 ' + ox1 + ' ' + oy1 +
+             ' L ' + ix1 + ' ' + iy1 + ' A ' + r + ' ' + r + ' 0 ' + lr + ' 0 ' + ix0 + ' ' + iy0 + ' Z',
+          color: s.color, label: s.label, pctText: s.pct + '%',
+          labelX: lx.toFixed(1), labelY: (ly + 4).toFixed(1),
+          labelSize: s.pct < 9 ? '10' : '12',
+          labelFill: ['#f8e9b5', '#f2d88c', '#f0c455', '#f6a63d'].indexOf(s.color) >= 0 ? '#7a4a10' : '#ffffff',
+          popX: (Math.cos(rad(mid)) * 14).toFixed(1) + 'px',
+          popY: (Math.sin(rad(mid)) * 14).toFixed(1) + 'px',
+          tipLeft: (lx / 220 * 100).toFixed(1) + '%',
+          tipTop: (ly / 220 * 100).toFixed(1) + '%',
+          tipText: s.label + ' · ' + s.pct + '%',
+          delay: (i * 0.09).toFixed(2) + 's',
+          onEnter: () => this.setState({ hoverSlice: chartId + ':' + i }),
+          onLeave: () => this.setState({ hoverSlice: null }),
+          isHot: this.state.hoverSlice === chartId + ':' + i,
+        };
+      });
+    };
     const segGradient = (items, gapDeg) => {
       let a = 0; const stops = [];
       items.forEach(it => {
@@ -1113,13 +1252,13 @@ class Component extends DCLogic {
       kontrak: {
         subtitle: 'Perolehan kontrak & komposisi portofolio 2021 – 2030',
         mainTitle: 'Perolehan Kontrak',
-        legend: [{ label: 'Konstruksi', color: '#b02427' }, { label: 'Properti', color: '#e63946' }, { label: 'Manufaktur', color: '#d9685f' }],
+        legend: [{ label: 'Konstruksi', color: '#8b1c29' }, { label: 'Properti', color: '#c0394a' }, { label: 'Manufaktur', color: '#e5778a' }],
         stacked: [[4.3, 2.5, 1.9], [2.5, 4.5, 1.9], [3.5, 1.9, 3.0], [4.5, 2.8, 5.1], [5.0, 3.1, 4.4], [5.4, 3.4, 4.0], [5.8, 3.6, 4.6], [6.1, 3.9, 5.0], [6.5, 4.2, 5.3], [6.9, 4.5, 5.7]],
       },
       revenue: {
         subtitle: 'Revenue per segmen & GPM 2021 – 2030',
         mainTitle: 'Revenue',
-        legend: [{ label: 'Konstruksi', color: '#b02427' }, { label: 'Properti', color: '#e63946' }, { label: 'Manufaktur', color: '#d9685f' }],
+        legend: [{ label: 'Konstruksi', color: '#8b1c29' }, { label: 'Properti', color: '#c0394a' }, { label: 'Manufaktur', color: '#e5778a' }],
         stacked: [[4.3, 2.5, 1.9], [2.5, 4.5, 1.9], [3.5, 1.9, 3.0], [4.5, 2.8, 5.1], [5.0, 3.1, 4.4], [5.4, 3.4, 4.0], [5.8, 3.6, 4.6], [6.1, 3.9, 5.0], [6.5, 4.2, 5.3], [6.9, 4.5, 5.7]],
         comboTitle: 'Revenue dan GPM – Per Segment',
         comboBarLabel: 'Revenue',
@@ -1129,7 +1268,7 @@ class Component extends DCLogic {
       ebitda: {
         subtitle: 'EBITDA per segmen & EBITDA margin 2021 – 2030',
         mainTitle: 'EBITDA',
-        legend: [{ label: 'Konstruksi', color: '#b02427' }, { label: 'Properti', color: '#e63946' }, { label: 'Manufaktur', color: '#d9685f' }],
+        legend: [{ label: 'Konstruksi', color: '#8b1c29' }, { label: 'Properti', color: '#c0394a' }, { label: 'Manufaktur', color: '#e5778a' }],
         stacked: [[4.3, 2.5, 1.9], [2.5, 4.5, 1.9], [3.5, 1.9, 3.0], [4.5, 2.8, 5.1], [5.0, 3.1, 4.4], [5.4, 3.4, 4.0], [5.8, 3.6, 4.6], [6.1, 3.9, 5.0], [6.5, 4.2, 5.3], [6.9, 4.5, 5.7]],
         comboTitle: 'EBITDA dan EBITDA Margin – Per Segment',
         comboBarLabel: 'EBITDA',
@@ -1139,7 +1278,7 @@ class Component extends DCLogic {
       net: {
         subtitle: 'Net profit per segmen & net profit margin 2021 – 2030',
         mainTitle: 'Net Profit',
-        legend: [{ label: 'Konstruksi', color: '#b02427' }, { label: 'Properti', color: '#e63946' }, { label: 'Manufaktur', color: '#d9685f' }],
+        legend: [{ label: 'Konstruksi', color: '#8b1c29' }, { label: 'Properti', color: '#c0394a' }, { label: 'Manufaktur', color: '#e5778a' }],
         stacked: [[4.3, 2.5, 1.9], [2.5, 4.5, 1.9], [3.5, 1.9, 3.0], [4.5, 2.8, 5.1], [5.0, 3.1, 4.4], [5.4, 3.4, 4.0], [5.8, 3.6, 4.6], [6.1, 3.9, 5.0], [6.5, 4.2, 5.3], [6.9, 4.5, 5.7]],
         comboTitle: 'Net Profit dan Net Profit Margin – Per Segment',
         comboBarLabel: 'Net Profit',
@@ -1170,6 +1309,8 @@ class Component extends DCLogic {
     }).join('');
     const profitStacked = pd.stacked.map((segs, i) => ({
       year: pYears[i],
+      badge: ['◷','⚙','◉','▤','⏱','◈','▲','✦','◐','⬢'][i % 10],
+      badgeColor: '#b02427',
       delay: (i * 0.09).toFixed(2) + 's',
       segs: segs.map((v, j) => ({
         h: Math.max(v / 8 * 216, 6).toFixed(1) + 'px',
@@ -1178,37 +1319,105 @@ class Component extends DCLogic {
         light: shade(pd.legend[j].color, 46),
         dark: shade(pd.legend[j].color, -52),
         delay: (i * 0.08 + j * 0.05).toFixed(2) + 's',
+        valText: v.toFixed(1),
         tip: pd.legend[j].label + ' ' + pYears[i] + ': ' + v.toFixed(1) + ' T',
       })),
     }));
     const profitCombo = (pd.combo || []).map((v, i) => ({
-      year: pYears[i], h: (v / 8 * 164).toFixed(1) + 'px', trackH: Math.min(v / 8 * 164 + 26, 164).toFixed(1) + 'px', delay: (i * 0.09).toFixed(2) + 's',
+      year: pYears[i], valText: v.toFixed(1), h: (v / 8 * 164).toFixed(1) + 'px', trackH: Math.min(v / 8 * 164 + 26, 164).toFixed(1) + 'px', delay: (i * 0.09).toFixed(2) + 's',
       tip: pd.comboBarLabel + ' ' + pYears[i] + ': ' + v.toFixed(1) + ' T · Margin ' + pd.margin[i] + '%',
     }));
     const profitMarginPoints = (pd.margin || [])
       .map((m, i) => ((i + 0.5) * 100) + ',' + (164 - m / 20 * 164).toFixed(1)).join(' ');
     const pieDefs = [
       { title: 'Proporsi Kontrak berdasarkan Owner', centre: 'Owner',
-        segs: [{ label: 'Pemerintah', pct: 57, color: '#b02427' }, { label: 'BUMN', pct: 22, color: '#e63946' }, { label: 'Swasta', pct: 11, color: '#d9685f' }, { label: 'Lainnya', pct: 10, color: '#bcbcbc' }] },
-      { title: 'Proporsi Kontrak berdasarkan NJO / JO', centre: 'NJO &amp; JO',
-        segs: [{ label: 'NJO', pct: 74, color: '#b02427' }, { label: 'JO', pct: 26, color: '#d9685f' }] },
+        segs: [{ label: 'Pemerintah', pct: 57, color: '#c6392b' }, { label: 'BUMN', pct: 22, color: '#2b6cb0' }, { label: 'Swasta', pct: 11, color: '#f6a63d' }, { label: 'Lainnya', pct: 10, color: '#f2d88c' }] },
+      { title: 'Proporsi Kontrak berdasarkan NJO / JO', centre: 'NJO / JO',
+        segs: [{ label: 'NJO', pct: 74, color: '#c6392b' }, { label: 'JO', pct: 26, color: '#f6a63d' }] },
       { title: 'Proporsi Kontrak berdasarkan Segment Konstruksi', centre: 'Segmen',
-        segs: [{ label: 'General Civil', pct: 43, color: '#9e1616' }, { label: 'Power', pct: 18, color: '#b02427' }, { label: 'Industri dan Hilirisasi', pct: 8, color: '#e63946' }, { label: 'Railway', pct: 7, color: '#d9685f' }, { label: 'Komersial & Residensial', pct: 24, color: '#bcbcbc' }] },
+        segs: [{ label: 'General Civil', pct: 43, color: '#c6392b' }, { label: 'Power', pct: 18, color: '#e85e1b' }, { label: 'Industri dan Hilirisasi', pct: 8, color: '#f17e2b' }, { label: 'Railway', pct: 7, color: '#f6a63d' }, { label: 'Komersial & Residensial', pct: 24, color: '#f2d88c' }] },
     ];
     const profitPies = pieDefs.map(p => ({
-      title: p.title, centre: p.centre,
-      gradient: segGradient(p.segs, 5),
+      title: p.title,
+      slices: donutRing(p.segs, p.centre),
+      centre: p.centre,
+      centrePct: Math.max.apply(null, p.segs.map(s => s.pct)) + '%',
       items: p.segs.map(s => ({ label: s.label + ' ' + s.pct + '%', color: s.color })),
     }));
 
     const kpiRings = [
-      { label: 'Pendapatan & EBITDA', pct: 38, color: '#b02427' },
-      { label: 'Order Book', pct: 27, color: '#e63946' },
-      { label: 'Laba Bersih', pct: 21, color: '#d9685f' },
-      { label: 'Sisa Target', pct: 14, color: '#bcbcbc' },
+      { label: 'Pendapatan & EBITDA', pct: 38, color: '#c6392b' },
+      { label: 'Order Book', pct: 27, color: '#e85e1b' },
+      { label: 'Laba Bersih', pct: 21, color: '#f6a63d' },
+      { label: 'Sisa Target', pct: 14, color: '#f2d88c' },
     ];
-    const kpiDonutGradient = segGradient(kpiRings, 4);
+    const kpiPieSlices = donutRing(kpiRings, 'kpi');
+    const kpiTopPct = Math.max.apply(null, kpiRings.map(r => r.pct)) + '%';
     const kpiRingLegend = kpiRings.map(r => ({ label: r.label, color: r.color, pctText: r.pct + '%' }));
+
+    const LIKUID = {
+      aruskas: { title: 'Arus Kas', min: -6, max: 6, ticks: [6, 4, 2, 0, -2, -4, -6],
+        series: [
+          { label: 'Operasi', color: '#8b1c29', values: [4.3, 2.5, 3.5, 4.55] },
+          { label: 'Investasi', color: '#c0394a', values: [-2.0, -2.0, -0.6, -0.25] },
+          { label: 'Pendanaan', color: '#e5778a', values: [-1.9, -2.0, -1.4, -0.6] },
+        ] },
+      ccc: { title: 'Cash Conversion Cycle', min: -5, max: 15, ticks: [15, 10, 5, 0, -5],
+        series: [
+          { label: 'DSO', color: '#8b1c29', values: [4.4, 2.5, 3.5, 4.5] },
+          { label: 'DIO', color: '#c0394a', values: [4.9, 5.1, 5.1, 5.1] },
+          { label: 'DPO', color: '#e5778a', values: [-1.8, -1.8, -0.9, -0.35] },
+        ] },
+      ratio: { title: 'Current Ratio', min: 0, max: 1.2, ticks: [1.2, 1, 0.8, 0.6, 0.4, 0.2, 0],
+        line: { label: 'Operasi', color: '#8b1c29', values: [0.90, 1.00, 1.10, 1.05] } },
+    };
+    const likuidYears = ['2021', '2022', '2023', '2024'];
+    const lKey = this.state.likuidTab || 'aruskas';
+    const ld = LIKUID[lKey];
+    const H = 184;
+    const lScale = H / (ld.max - ld.min);
+    const zeroTop = (ld.max - 0) * lScale;
+    const likuidTabs = [
+      { key: 'aruskas', label: 'Arus Kas' },
+      { key: 'ratio', label: 'Current Ratio' },
+      { key: 'ccc', label: 'Cash Conversion' },
+    ].map(t => ({
+      label: t.label,
+      onClick: () => this.setState({ likuidTab: t.key }),
+      bg: lKey === t.key ? 'linear-gradient(135deg, #ef8790, #cc4148)' : 'transparent',
+      color: lKey === t.key ? '#fff' : '#7a7a7a',
+    }));
+    const likuidCols = ld.series ? likuidYears.map((yr, i) => {
+      const n = ld.series.length, slot = 100 / n, bw = slot * 0.7;
+      return { segs: ld.series.map((s, j) => {
+        const v = s.values[i], hpx = Math.abs(v) * lScale;
+        const top = v >= 0 ? zeroTop - hpx : zeroTop;
+        return { left: (slot * j + (slot - bw) / 2).toFixed(2) + '%', width: bw.toFixed(2) + '%',
+          top: top.toFixed(1) + 'px', h: hpx.toFixed(1) + 'px', color: s.color,
+          origin: v >= 0 ? 'bottom' : 'top', delay: (i * 0.08 + j * 0.05).toFixed(2) + 's',
+          radius: v >= 0 ? '3px 3px 0 0' : '0 0 3px 3px',
+          chipSide: v >= 0 ? 'bottom' : 'top',
+          valText: v.toFixed(1),
+          tip: s.label + ' ' + yr + ': ' + v.toFixed(2) };
+      }) };
+    }) : [];
+    const likuidLinePoints = ld.line ? ld.line.values.map((v, i) => ((i + 0.5) * 100) + ',' + ((ld.max - v) * lScale).toFixed(1)).join(' ') : '';
+    const likuidLineDots = ld.line ? ld.line.values.map((v, i) => ({
+      top: (((ld.max - v) * lScale) - 6).toFixed(1) + 'px',
+      tipTop: (((ld.max - v) * lScale) - 40).toFixed(1) + 'px',
+      tip: likuidYears[i] + ': ' + v.toFixed(2),
+    })) : [];
+    const likuidLegend = ld.series ? ld.series.map(s => ({ label: s.label, color: s.color })) : [{ label: ld.line.label, color: ld.line.color }];
+
+    const solvValues = [2.0, 3.0, 4.0, 5.0];
+    const solvTotal = solvValues.reduce((a, b) => a + b, 0);
+    const solvColors = ['#c6392b', '#e85e1b', '#f6a63d', '#f2d88c'];
+    const solvSegs = solvValues.map((v, i) => ({
+      label: likuidYears[i], color: solvColors[i],
+      pct: Math.round(v / solvTotal * 100),
+    }));
+    const solvSlices = donutRing(solvSegs, 'solv');
+    const solvLegend = solvSegs.map((s, i) => ({ label: s.label, color: s.color, value: solvValues[i].toFixed(1) }));
 
     const statusCards = [
       { label: 'Menunggu Approval', value: '0', period: 'Agustus 2026', bg: 'linear-gradient(135deg, #c9403f, #7d0f0f)', shadow: 'rgba(125,15,15,0.38)', icon: '\u23F0\uFE0E', iconAnim: 'softPulse 2.4s ease-in-out infinite' },
@@ -1319,7 +1528,7 @@ class Component extends DCLogic {
       year: b.year,
       exclH: (b.excl * 3) + 'px',
       elimH: (b.elim * 3) + 'px',
-      color: i === gPeak ? '#b02427' : '#a94547',
+      color: i === gPeak ? '#8b1c29' : '#c0394a',
       delay: (i * 0.04) + 's',
     }));
     const grafikPeakLeftPct = (((gPeak + 0.5) / salesRaw.length) * 100) + '%';
@@ -1467,7 +1676,11 @@ class Component extends DCLogic {
       profitSubtitle: pd.subtitle, profitMainTitle: pd.mainTitle, profitLegend: pd.legend,
       profitComboTitle: pd.comboTitle, profitComboBarLabel: pd.comboBarLabel,
       profitIsKontrak: pKey === 'kontrak', profitHasCombo: pKey !== 'kontrak',
-      railIcons, statusCards, kpiDonutGradient, kpiRingLegend, kpiYears, kpiRows, trendBars, recentUploads, peakLeftPct, peakLabel,
+      solvSlices, solvLegend,
+      likuidTabs, likuidCols, likuidYears, likuidLegend, likuidLinePoints, likuidLineDots,
+      likuidTitle: ld.title, likuidTicks: ld.ticks, likuidZeroTop: zeroTop.toFixed(1) + 'px',
+      likuidIsLine: !!ld.line, likuidIsBars: !ld.line,
+      railIcons, statusCards, kpiPieSlices, kpiTopPct, kpiRingLegend, kpiYears, kpiRows, trendBars, recentUploads, peakLeftPct, peakLabel,
       pendingUnits: ['Departemen Infrastruktur I belum upload', 'Departemen Infrastruktur II belum upload'],
       showProfile: this.state.showProfile,
       showNotif: this.state.showNotif,
